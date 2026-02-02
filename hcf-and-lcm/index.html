@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Quizington</title>
+   <link rel="icon" type="image/png" href="https://i.ibb.co/dJbzdRb3/R-1221e-modified.png">
+
+</head>
+<body>
+  <div class="quiz">
+
+    <img width="300px" src="https://i.ibb.co/LzNNg29Z/w23328er.png" alt="Quizington"><br>
+    <a href="https://quizington.github.io/" style="
+      display: inline-block;
+      padding: 5px 8px;
+      background: #1d4ed8;
+      color: white;
+      text-decoration: none;
+      border: 1px solid #0f2e8a;
+      font-size: 18px;
+    "
+    onmouseover="this.style.background='#4270ec'"
+    onmouseout="this.style.background='#1d4ed8'">← Home Page</a>
+    <hr>
+
+    <!-- QUIZ UI -->
+    <div id="quizUI">
+    <div id="quizTitle" style="width: 90%; background-color: #d6d6d6;font-size: 22px;">
+  <b></b>
+</div>
+<br>
+      <div class="question">Question 1/10</div>
+      <div class="questiontext">Loading...</div>
+
+      <textarea placeholder="Working (optional)"></textarea>
+      <input type="text" placeholder="Your answer" />
+
+      <div class="buttons">
+        <button class="prev" onclick="goPrev()">Previous</button>
+        <button class="next" onclick="goNext()">Next</button>
+      </div>
+    </div>
+
+    <!-- RESULTS -->
+    <div id="resultsBox" style="display:none; padding:20px; background-color:#dde6ff; margin-top:20px; border:1px solid #999;"></div>
+
+  </div>
+
+  <script>
+    document.querySelector("#quizTitle b").textContent = "HCF & LCM";
+
+   // -----------------------------
+// Question bank (HCF & LCM)
+// -----------------------------
+const allQuestions = [
+
+  // EASY
+  { q: "Find the HCF of 8 and 12", a: "4" },
+  { q: "Find the LCM of 3 and 4", a: "12" },
+  { q: "Find the HCF of 15 and 25", a: "5" },
+  { q: "Find the LCM of 5 and 6", a: "30" },
+  { q: "Find the HCF of 9 and 27", a: "9" },
+  { q: "Find the LCM of 2 and 7", a: "14" },
+  { q: "Find the HCF of 14 and 21", a: "7" },
+  { q: "Find the LCM of 8 and 10", a: "40" },
+  { q: "Find the HCF of 18 and 24", a: "6" },
+  { q: "Find the LCM of 9 and 12", a: "36" },
+
+  // HARDER
+  { q: "Find the HCF of 36 and 84", a: "12" },
+  { q: "Find the LCM of 12 and 15", a: "60" },
+  { q: "Find the HCF of 48 and 180", a: "12" },
+  { q: "Find the LCM of 14 and 20", a: "140" },
+  { q: "Find the HCF of 42 and 70", a: "14" },
+  { q: "Find the LCM of 16 and 24", a: "48" },
+  { q: "Find the HCF of 63 and 81", a: "9" },
+  { q: "Find the LCM of 18 and 30", a: "90" },
+  { q: "Find the HCF of 50 and 75", a: "25" },
+  { q: "Find the LCM of 21 and 28", a: "84" },
+
+  // EXTRA-HARD
+  { q: "Find the HCF of 96 and 144", a: "48" },
+  { q: "Find the LCM of 45 and 60", a: "180" },
+  { q: "Find the HCF of 84, 126 and 210", a: "42" },
+  { q: "Find the LCM of 12, 18 and 30", a: "180" },
+  { q: "Find the HCF of 128 and 320", a: "64" },
+  { q: "Find the LCM of 25 and 40", a: "200" },
+  { q: "Find the HCF of 144 and 360", a: "72" },
+  { q: "Find the LCM of 22 and 55", a: "110" },
+  { q: "Find the HCF of 135 and 225", a: "45" },
+  { q: "Find the LCM of 18, 24 and 32", a: "288" },
+
+
+
+  // EASY WORD PROBLEMS
+  { q: "Two bells ring every 4 minutes and 6 minutes. After how many minutes will they ring together?", a: "12" },
+  { q: "A gardener plants trees in rows of 8 or 12 with none left over. What is the smallest number of trees he could have?", a: "24" },
+  { q: "A teacher has 18 red pens and 24 blue pens. What is the greatest number of identical pen packs she can make?", a: "6" },
+  { q: "Two lights flash every 5 seconds and 10 seconds. When will they flash together again?", a: "10" },
+  { q: "A baker has 20 muffins and 30 cookies. What is the largest number of identical treat bags he can make?", a: "10" },
+
+  // HARDER WORD PROBLEMS
+  { q: "Three buses arrive every 12, 15 and 20 minutes. After how many minutes will they all arrive together?", a: "60" },
+  { q: "A rope of length 84m and another of 126m need to be cut into equal pieces with no waste. What is the longest length of each piece?", a: "42" },
+  { q: "A shop restocks apples every 18 days and oranges every 30 days. After how many days will both be restocked on the same day?", a: "90" },
+  { q: "A school has 48 boys and 72 girls. What is the greatest number of equal‑sized teams they can form?", a: "24" },
+  { q: "Two machines complete cycles every 16 seconds and 24 seconds. When will they next finish a cycle together?", a: "48" },
+
+  // EXTRA-HARD WORD PROBLEMS
+  { q: "Three lights flash every 9, 12 and 15 seconds. After how many seconds will they flash together?", a: "180" },
+  { q: "Lengths of 96cm, 144cm and 240cm must be cut into the longest equal pieces possible. What is the length of each piece?", a: "48" },
+  { q: "A runner trains on two tracks: one lap is 350m, the other is 420m. After how many metres will he finish on a lap boundary for both tracks?", a: "2100" },
+  { q: "Two gears rotate every 28 seconds and 42 seconds. After how many seconds will they align again?", a: "84" },
+  { q: "Three delivery vans return to base every 18, 27 and 36 hours. After how many hours will they all return together?", a: "108" }
+];
+
+
+
+
+
+    // -----------------------------
+    // Pick 10 random questions
+    // -----------------------------
+    let quizQuestions = [];
+    function pickRandomQuestions() {
+      quizQuestions = [...allQuestions]
+        .sort(() => Math.random() - 0.5)
+        .slice(0, 10);
+    }
+
+    // -----------------------------
+    // Quiz state
+    // -----------------------------
+    let current = 0;
+    let userAnswers = Array(10).fill("");
+    let userWorking = Array(10).fill("");
+
+    // -----------------------------
+    // DOM elements
+    // -----------------------------
+    const questionNumber = document.querySelector(".question");
+    const questionText = document.querySelector(".questiontext");
+    const answerInput = document.querySelector("input[type='text']");
+    const workingBox = document.querySelector("textarea");
+    const resultsBox = document.getElementById("resultsBox");
+    const quizUI = document.getElementById("quizUI");
+
+    // -----------------------------
+    // Load question
+    // -----------------------------
+    function loadQuestion() {
+      const q = quizQuestions[current];
+
+      questionNumber.textContent = `Question ${current + 1}/10`;
+      questionText.textContent = q.q;
+
+      answerInput.value = userAnswers[current];
+      workingBox.value = userWorking[current];
+    }
+
+    // Auto-save typing
+    answerInput.addEventListener("input", () => {
+      userAnswers[current] = answerInput.value;
+    });
+
+    workingBox.addEventListener("input", () => {
+      userWorking[current] = workingBox.value;
+    });
+
+    // -----------------------------
+    // Navigation
+    // -----------------------------
+    function goNext() {
+      userAnswers[current] = answerInput.value.trim();
+      userWorking[current] = workingBox.value.trim();
+
+      if (current === 9) {
+        showResults();
+        return;
+      }
+
+      current++;
+      loadQuestion();
+    }
+
+    function goPrev() {
+      if (current > 0) {
+        current--;
+        loadQuestion();
+      }
+    }
+
+    // -----------------------------
+    // Results
+    // -----------------------------
+    function showResults() {
+      quizUI.style.display = "none";
+      resultsBox.style.display = "block";
+
+      let correct = 0;
+      let breakdown = "";
+
+      quizQuestions.forEach((q, i) => {
+        const user = userAnswers[i];
+        const isCorrect = user == q.a;
+
+        if (isCorrect) correct++;
+
+        breakdown += `
+          <p style="font-size:18px; color:${isCorrect ? 'green' : 'darkred'};">
+            Question ${i + 1}: ${q.a}
+            ${!isCorrect ? `<br>You wrote: ${user}` : ""}
+          </p>
+        `;
+      });
+
+      const percent = Math.round((correct / 10) * 100);
+
+      resultsBox.innerHTML = `
+        <h1>Results</h1>
+        <br>
+        <h1>${correct}/10</h1>
+        <h2>${percent}%</h2>
+
+        <button onclick="restartQuiz()" 
+          style="background-color: #1c7831; color: white; font-size: 22px; border:none; padding:8px;">
+          Take this quiz again
+        </button>
+
+        <h3 style="margin-top:20px;">A breakdown:</h3>
+        ${breakdown}
+      `;
+    }
+
+    // -----------------------------
+    // Restart
+    // -----------------------------
+    function restartQuiz() {
+      pickRandomQuestions();
+      current = 0;
+      userAnswers = Array(10).fill("");
+      userWorking = Array(10).fill("");
+
+      resultsBox.style.display = "none";
+      quizUI.style.display = "block";
+
+      loadQuestion();
+    }
+
+    // -----------------------------
+    // Start quiz
+    // -----------------------------
+    pickRandomQuestions();
+    loadQuestion();
+  </script>
+  
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial;
+      background: #eee;
+      display: flex;
+      justify-content: center;
+      padding: 40px 16px;
+    }
+
+    .quiz {
+      width: 100%;
+      max-width: 500px;
+      background: #fff;
+      border: 1px solid #ccc;
+      padding: 20px;
+    }
+
+    h1 {
+      font-size: 30px;
+      margin-bottom: 10px;
+      margin-top: 5px;
+    }
+
+    .question {
+      font-size: 22px;
+      margin-bottom: 10px;
+    }
+
+    .questiontext {
+      font-weight: bold;
+      font-size: 20px;
+      margin-bottom: 20px;
+      background: #dde6ff;
+      padding: 6px 10px;
+      color: #1d4ed8;
+      display: inline-block;
+    }
+
+    input {
+      width: 29%;
+      font-size: 20px;
+      padding: 5px;
+      margin-bottom: 16px;
+      border: 1px solid #999;
+      background: #fff;
+      outline: none;
+    }
+    @media (max-width: 560px) {
+  input {
+    width: 90%;
+  }
+}
+
+
+    textarea {
+      font-family: Arial, Helvetica, sans-serif;
+      width: 90%;
+      font-size: 18px;
+      padding: 5px;
+      margin-bottom: 16px;
+      border: 1px solid #999;
+      background: #fff;
+      outline: none;
+      height: 80px;
+      resize: vertical;
+    }
+
+    input:hover, textarea:hover {
+      background: #f7f7f7;
+    }
+
+    input:focus, textarea:focus {
+      border-color: #1d4ed8;
+      background: #f0f4ff;
+    }
+
+    button {
+      padding: 5px;
+      font-size: 22px;
+      border: none;
+      color: white;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+
+    .prev { background: #5b5b5b; }
+    .prev:hover { background: #888; }
+
+    .next { background: #1c7831; }
+    .next:hover { background: #2fbb52; }
+  </style>
+</body>
+</html>
