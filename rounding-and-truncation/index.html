@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Quizington</title>
+   <link rel="icon" type="image/png" href="https://i.ibb.co/dJbzdRb3/R-1221e-modified.png">
+
+</head>
+<body>
+  <div class="quiz">
+
+    <img width="300px" src="https://i.ibb.co/LzNNg29Z/w23328er.png" alt="Quizington"><br>
+    <a href="https://quizington.github.io/" style="
+      display: inline-block;
+      padding: 5px 8px;
+      background: #1d4ed8;
+      color: white;
+      text-decoration: none;
+      border: 1px solid #0f2e8a;
+      font-size: 18px;
+    "
+    onmouseover="this.style.background='#4270ec'"
+    onmouseout="this.style.background='#1d4ed8'">← Home Page</a>
+    <hr>
+
+    <!-- QUIZ UI -->
+    <div id="quizUI">
+    <div id="quizTitle" style="width: 90%; background-color: #d6d6d6;font-size: 22px;">
+  <b></b>
+</div>
+<br>
+      <div class="question">Question 1/10</div>
+      <div class="questiontext">Loading...</div>
+
+      <textarea placeholder="Working (optional)"></textarea>
+      <input type="text" placeholder="Your answer" />
+
+      <div class="buttons">
+        <button class="prev" onclick="goPrev()">Previous</button>
+        <button class="next" onclick="goNext()">Next</button>
+      </div>
+    </div>
+
+    <!-- RESULTS -->
+    <div id="resultsBox" style="display:none; padding:20px; background-color:#dde6ff; margin-top:20px; border:1px solid #999;"></div>
+
+  </div>
+
+  <script>
+    document.querySelector("#quizTitle b").textContent = "Rounding & Truncation";
+
+ // ---------------------------------------------------------
+// ROUNDING & TRUNCATION (NO CALCULATOR NEEDED)
+// NORMAL QUESTIONS + WORD PROBLEMS
+// ---------------------------------------------------------
+const allQuestions = [
+
+  // -------------------------
+  // NORMAL QUESTIONS
+  // -------------------------
+
+  // EASY
+  { q: "Round 4.27 to 1 decimal place.", a: "4.3" },
+  { q: "Round 18.6 to the nearest whole number.", a: "19" },
+  { q: "Truncate 5.987 to 2 decimal places.", a: "5.98" },
+  { q: "Round 72 to the nearest 10.", a: "70" },
+  { q: "Truncate 9.543 to 1 decimal place.", a: "9.5" },
+
+  // MEDIUM
+  { q: "Round 3.141 to 2 decimal places.", a: "3.14" },
+  { q: "Truncate 12.879 to 2 decimal places.", a: "12.87" },
+  { q: "Round 456 to the nearest 100.", a: "500" },
+  { q: "Round 0.0847 to 2 decimal places.", a: "0.08" },
+  { q: "Truncate 7.1234 to 3 decimal places.", a: "7.123" },
+
+  // HARD
+  { q: "Round 987.654 to 1 decimal place.", a: "987.7" },
+  { q: "Truncate 0.9999 to 3 decimal places.", a: "0.999" },
+  { q: "Round 14,876 to the nearest 1,000.", a: "15000" },
+  { q: "Round 0.00496 to 3 decimal places.", a: "0.005" },
+  { q: "Truncate 123.4567 to 4 decimal places.", a: "123.4567" },
+
+
+  // -------------------------
+  // WORD PROBLEMS
+  // -------------------------
+
+  // EASY WORD PROBLEMS
+  { q: "A toy costs £4.27. Round the price to the nearest 10p.", a: "£4.30" },
+  { q: "A runner completes 18.6 km. Round to the nearest km.", a: "19 km" },
+  { q: "A bottle contains 5.987 L of water. Truncate to 2 dp.", a: "5.98 L" },
+  { q: "A class has 72 students. Round to the nearest 10.", a: "70" },
+  { q: "A rope is 9.543 m long. Truncate to 1 dp.", a: "9.5 m" },
+
+  // MEDIUM WORD PROBLEMS
+  { q: "A circle has a radius of 3.141 m. Round to 2 dp.", a: "3.14 m" },
+  { q: "A car travels 12.879 km. Truncate to 2 dp.", a: "12.87 km" },
+  { q: "A town has 456 people. Round to the nearest 100.", a: "500" },
+  { q: "A measurement reads 0.0847 m. Round to 2 dp.", a: "0.08 m" },
+  { q: "A pipe is 7.1234 m long. Truncate to 3 dp.", a: "7.123 m" },
+
+  // HARD WORD PROBLEMS
+  { q: "A machine prints 987.654 labels. Round to 1 dp.", a: "987.7" },
+  { q: "A probability is 0.9999. Truncate to 3 dp.", a: "0.999" },
+  { q: "A city has 14,876 people. Round to nearest 1,000.", a: "15000" },
+  { q: "A reading shows 0.00496 A. Round to 3 dp.", a: "0.005 A" },
+  { q: "A distance is 123.4567 km. Truncate to 4 dp.", a: "123.4567 km" }
+];
+
+
+
+
+
+
+
+    // -----------------------------
+    // Pick 10 random questions
+    // -----------------------------
+    let quizQuestions = [];
+    function pickRandomQuestions() {
+      quizQuestions = [...allQuestions]
+        .sort(() => Math.random() - 0.5)
+        .slice(0, 10);
+    }
+
+    // -----------------------------
+    // Quiz state
+    // -----------------------------
+    let current = 0;
+    let userAnswers = Array(10).fill("");
+    let userWorking = Array(10).fill("");
+
+    // -----------------------------
+    // DOM elements
+    // -----------------------------
+    const questionNumber = document.querySelector(".question");
+    const questionText = document.querySelector(".questiontext");
+    const answerInput = document.querySelector("input[type='text']");
+    const workingBox = document.querySelector("textarea");
+    const resultsBox = document.getElementById("resultsBox");
+    const quizUI = document.getElementById("quizUI");
+
+    // -----------------------------
+    // Load question
+    // -----------------------------
+    function loadQuestion() {
+      const q = quizQuestions[current];
+
+      questionNumber.textContent = `Question ${current + 1}/10`;
+      questionText.textContent = q.q;
+
+      answerInput.value = userAnswers[current];
+      workingBox.value = userWorking[current];
+    }
+
+    // Auto-save typing
+    answerInput.addEventListener("input", () => {
+      userAnswers[current] = answerInput.value;
+    });
+
+    workingBox.addEventListener("input", () => {
+      userWorking[current] = workingBox.value;
+    });
+
+    // -----------------------------
+    // Navigation
+    // -----------------------------
+    function goNext() {
+      userAnswers[current] = answerInput.value.trim();
+      userWorking[current] = workingBox.value.trim();
+
+      if (current === 9) {
+        showResults();
+        return;
+      }
+
+      current++;
+      loadQuestion();
+    }
+
+    function goPrev() {
+      if (current > 0) {
+        current--;
+        loadQuestion();
+      }
+    }
+
+    // -----------------------------
+    // Results
+    // -----------------------------
+    function showResults() {
+      quizUI.style.display = "none";
+      resultsBox.style.display = "block";
+
+      let correct = 0;
+      let breakdown = "";
+
+      quizQuestions.forEach((q, i) => {
+        const user = userAnswers[i];
+        const isCorrect = user == q.a;
+
+        if (isCorrect) correct++;
+
+        breakdown += `
+          <p style="font-size:18px; color:${isCorrect ? 'green' : 'darkred'};">
+            Question ${i + 1}: ${q.a}
+            ${!isCorrect ? `<br>You wrote: ${user}` : ""}
+          </p>
+        `;
+      });
+
+      const percent = Math.round((correct / 10) * 100);
+
+      resultsBox.innerHTML = `
+        <h1>Results</h1>
+        <br>
+        <h1>${correct}/10</h1>
+        <h2>${percent}%</h2>
+
+        <button onclick="restartQuiz()" 
+          style="background-color: #1c7831; color: white; font-size: 22px; border:none; padding:8px;">
+          Take this quiz again
+        </button>
+
+        <h3 style="margin-top:20px;">A breakdown:</h3>
+        ${breakdown}
+      `;
+    }
+
+    // -----------------------------
+    // Restart
+    // -----------------------------
+    function restartQuiz() {
+      pickRandomQuestions();
+      current = 0;
+      userAnswers = Array(10).fill("");
+      userWorking = Array(10).fill("");
+
+      resultsBox.style.display = "none";
+      quizUI.style.display = "block";
+
+      loadQuestion();
+    }
+
+    // -----------------------------
+    // Start quiz
+    // -----------------------------
+    pickRandomQuestions();
+    loadQuestion();
+  </script>
+  
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial;
+      background: #eee;
+      display: flex;
+      justify-content: center;
+      padding: 40px 16px;
+    }
+
+    .quiz {
+      width: 100%;
+      max-width: 500px;
+      background: #fff;
+      border: 1px solid #ccc;
+      padding: 20px;
+    }
+
+    h1 {
+      font-size: 30px;
+      margin-bottom: 10px;
+      margin-top: 5px;
+    }
+
+    .question {
+      font-size: 22px;
+      margin-bottom: 10px;
+    }
+
+    .questiontext {
+      font-weight: bold;
+      font-size: 20px;
+      margin-bottom: 20px;
+      background: #dde6ff;
+      padding: 6px 10px;
+      color: #1d4ed8;
+      display: inline-block;
+    }
+
+    input {
+      width: 29%;
+      font-size: 20px;
+      padding: 5px;
+      margin-bottom: 16px;
+      border: 1px solid #999;
+      background: #fff;
+      outline: none;
+    }
+    @media (max-width: 560px) {
+  input {
+    width: 90%;
+  }
+}
+
+
+    textarea {
+      font-family: Arial, Helvetica, sans-serif;
+      width: 90%;
+      font-size: 18px;
+      padding: 5px;
+      margin-bottom: 16px;
+      border: 1px solid #999;
+      background: #fff;
+      outline: none;
+      height: 80px;
+      resize: vertical;
+    }
+
+    input:hover, textarea:hover {
+      background: #f7f7f7;
+    }
+
+    input:focus, textarea:focus {
+      border-color: #1d4ed8;
+      background: #f0f4ff;
+    }
+
+    button {
+      padding: 5px;
+      font-size: 22px;
+      border: none;
+      color: white;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+
+    .prev { background: #5b5b5b; }
+    .prev:hover { background: #888; }
+
+    .next { background: #1c7831; }
+    .next:hover { background: #2fbb52; }
+  </style>
+</body>
+</html>
