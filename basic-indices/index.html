@@ -3,32 +3,28 @@
 <head>
   <meta charset="UTF-8" />
   <title>Quizington</title>
-   <link rel="icon" type="image/png" href="https://i.ibb.co/dJbzdRb3/R-1221e-modified.png">
-
+  <link rel="icon" type="image/png" href="https://i.ibb.co/dJbzdRb3/R-1221e-modified.png">
+  <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
   <div class="quiz">
 
     <img width="300px" src="https://i.ibb.co/LzNNg29Z/w23328er.png" alt="Quizington"><br>
-    <a href="https://quizington.github.io/" style="
-      display: inline-block;
-      padding: 5px 8px;
-      background: #1d4ed8;
-      color: white;
-      text-decoration: none;
-      border: 1px solid #0f2e8a;
-      font-size: 18px;
-    "
-    onmouseover="this.style.background='#4270ec'"
-    onmouseout="this.style.background='#1d4ed8'">← Home Page</a>
+
+    <a href="https://quizington.github.io/" class="home-btn">← Home Page</a>
+
     <hr>
 
     <!-- QUIZ UI -->
     <div id="quizUI">
-    <div id="quizTitle" style="width: 90%; background-color: #d6d6d6;font-size: 22px;">
-  <b></b>
-</div>
-<br>
+
+      <div id="quizTitle" class="quiz-title">
+        <b></b>
+      </div>
+
+      <br>
+
       <div class="question">Question 1/10</div>
       <div class="questiontext">Loading...</div>
 
@@ -42,296 +38,10 @@
     </div>
 
     <!-- RESULTS -->
-    <div id="resultsBox" style="display:none; padding:20px; background-color:#dde6ff; margin-top:20px; border:1px solid #999;"></div>
+    <div id="resultsBox"></div>
 
   </div>
 
-  <script>
-    document.querySelector("#quizTitle b").textContent = "Basic Indices";
-
-    // -----------------------------
-    // Question bank
-    // -----------------------------
-    const allQuestions = [
-  // EASY
-  { q: "What is 3²?", a: "9" },
-  { q: "What is 5³?", a: "125" },
-  { q: "What is 10²?", a: "100" },
-  { q: "What is 2⁴?", a: "16" },
-  { q: "What is 4²?", a: "16" },
-  { q: "What is 7²?", a: "49" },
-  { q: "What is 2³?", a: "8" },
-  { q: "What is 6²?", a: "36" },
-  { q: "What is 9²?", a: "81" },
-  { q: "What is 8²?", a: "64" },
-
-  // HARDER
-  { q: "Simplify 2³ × 2⁴", a: "128" },          // 2^7
-  { q: "Simplify 5⁴ ÷ 5²", a: "25" },           // 5^2
-  { q: "Simplify (3²)³", a: "729" },            // 3^6
-  { q: "Simplify 4³ × 4²", a: "1024" },         // 4^5
-  { q: "Simplify 9³ ÷ 9", a: "81" },            // 9^2
-  { q: "Simplify (2⁵)²", a: "1024" },           // 2^10
-  { q: "Simplify 7² × 7³", a: "16807" },        // 7^5
-  { q: "Simplify 3⁵ ÷ 3³", a: "9" },            // 3^2
-  { q: "Simplify (5³)²", a: "15625" },          // 5^6
-  { q: "Simplify 8⁴ ÷ 8²", a: "64" },            // 8^2
-
-//EXTRA-HARD!
-
-  { q: "Simplify 2⁴ × 2⁷ × 2³", a: "2048" },                 // 2^14
-  { q: "Simplify (3³)⁴", a: "531441" },                      // 3^12
-  { q: "Simplify 5⁶ ÷ 5³ × 5²", a: "15625" },                // 5^5
-  { q: "Simplify (7² × 7³) ÷ 7", a: "16807" },               // 7^4
-  { q: "Simplify (4⁵ ÷ 4²)²", a: "4096" },                   // 4^6
-  { q: "Simplify 9⁴ ÷ 3⁸", a: "1" },                         // (3^8)/(3^8)
-  { q: "Simplify (2³ × 3²)³", a: "46656" },                  // 2^9 * 3^6
-  { q: "Simplify (6³)² ÷ 6⁴", a: "216" },                    // 6^2
-  { q: "Simplify 8⁵ ÷ (2¹⁰)", a: "1024" },                   // 2^15 / 2^10
-  { q: "Simplify (10³ × 10²)³", a: "1e15" },                 // 10^15
-
-  { q: "Simplify (2⁵ × 5³) ÷ 10²", a: "200" },               // 32*125 / 100
-  { q: "Simplify (3⁴ × 9³) ÷ 27²", a: "81" },                // 3^8 / 3^6
-  { q: "Simplify (4³)³ ÷ 2¹²", a: "64" },                    // 4^9 / 2^12
-  { q: "Simplify (7³ × 49²) ÷ 7⁵", a: "343" },               // 7^3
-  { q: "Simplify (5⁴ × 25³) ÷ 125²", a: "625" },             // 5^4
-
-  { q: "Simplify (2⁴ × 3³ × 6²)", a: "10368" },              // 16 * 27 * 36
-  { q: "Simplify (12² ÷ 3²)³", a: "4096" },                  // (16)^3
-  { q: "Simplify (2⁶ × 4³) ÷ 8⁴", a: "1" },                  // 2^12 / 2^12
-  { q: "Simplify (3⁵ × 27²) ÷ 9⁴", a: "243" },               // 3^5
-  { q: "Simplify (2³ × 5³)² ÷ 10⁴", a: "1000" }              // (1000^2)/10000
-];
-
-
-
-    // -----------------------------
-    // Pick 10 random questions
-    // -----------------------------
-    let quizQuestions = [];
-    function pickRandomQuestions() {
-      quizQuestions = [...allQuestions]
-        .sort(() => Math.random() - 0.5)
-        .slice(0, 10);
-    }
-
-    // -----------------------------
-    // Quiz state
-    // -----------------------------
-    let current = 0;
-    let userAnswers = Array(10).fill("");
-    let userWorking = Array(10).fill("");
-
-    // -----------------------------
-    // DOM elements
-    // -----------------------------
-    const questionNumber = document.querySelector(".question");
-    const questionText = document.querySelector(".questiontext");
-    const answerInput = document.querySelector("input[type='text']");
-    const workingBox = document.querySelector("textarea");
-    const resultsBox = document.getElementById("resultsBox");
-    const quizUI = document.getElementById("quizUI");
-
-    // -----------------------------
-    // Load question
-    // -----------------------------
-    function loadQuestion() {
-      const q = quizQuestions[current];
-
-      questionNumber.textContent = `Question ${current + 1}/10`;
-      questionText.textContent = q.q;
-
-      answerInput.value = userAnswers[current];
-      workingBox.value = userWorking[current];
-    }
-
-    // Auto-save typing
-    answerInput.addEventListener("input", () => {
-      userAnswers[current] = answerInput.value;
-    });
-
-    workingBox.addEventListener("input", () => {
-      userWorking[current] = workingBox.value;
-    });
-
-    // -----------------------------
-    // Navigation
-    // -----------------------------
-    function goNext() {
-      userAnswers[current] = answerInput.value.trim();
-      userWorking[current] = workingBox.value.trim();
-
-      if (current === 9) {
-        showResults();
-        return;
-      }
-
-      current++;
-      loadQuestion();
-    }
-
-    function goPrev() {
-      if (current > 0) {
-        current--;
-        loadQuestion();
-      }
-    }
-
-    // -----------------------------
-    // Results
-    // -----------------------------
-    function showResults() {
-      quizUI.style.display = "none";
-      resultsBox.style.display = "block";
-
-      let correct = 0;
-      let breakdown = "";
-
-      quizQuestions.forEach((q, i) => {
-        const user = userAnswers[i];
-        const isCorrect = user == q.a;
-
-        if (isCorrect) correct++;
-
-        breakdown += `
-          <p style="font-size:18px; color:${isCorrect ? 'green' : 'darkred'};">
-            Question ${i + 1}: ${q.a}
-            ${!isCorrect ? `<br>You wrote: ${user}` : ""}
-          </p>
-        `;
-      });
-
-      const percent = Math.round((correct / 10) * 100);
-
-      resultsBox.innerHTML = `
-        <h1>Results</h1>
-        <br>
-        <h1>${correct}/10</h1>
-        <h2>${percent}%</h2>
-
-        <button onclick="restartQuiz()" 
-          style="background-color: #1c7831; color: white; font-size: 22px; border:none; padding:8px;">
-          Take this quiz again
-        </button>
-
-        <h3 style="margin-top:20px;">A breakdown:</h3>
-        ${breakdown}
-      `;
-    }
-
-    // -----------------------------
-    // Restart
-    // -----------------------------
-    function restartQuiz() {
-      pickRandomQuestions();
-      current = 0;
-      userAnswers = Array(10).fill("");
-      userWorking = Array(10).fill("");
-
-      resultsBox.style.display = "none";
-      quizUI.style.display = "block";
-
-      loadQuestion();
-    }
-
-    // -----------------------------
-    // Start quiz
-    // -----------------------------
-    pickRandomQuestions();
-    loadQuestion();
-  </script>
-  
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial;
-      background: #eee;
-      display: flex;
-      justify-content: center;
-      padding: 40px 16px;
-    }
-
-    .quiz {
-      width: 100%;
-      max-width: 500px;
-      background: #fff;
-      border: 1px solid #ccc;
-      padding: 20px;
-    }
-
-    h1 {
-      font-size: 30px;
-      margin-bottom: 10px;
-      margin-top: 5px;
-    }
-
-    .question {
-      font-size: 22px;
-      margin-bottom: 10px;
-    }
-
-    .questiontext {
-      font-weight: bold;
-      font-size: 20px;
-      margin-bottom: 20px;
-      background: #dde6ff;
-      padding: 6px 10px;
-      color: #1d4ed8;
-      display: inline-block;
-    }
-
-    input {
-      width: 29%;
-      font-size: 20px;
-      padding: 5px;
-      margin-bottom: 16px;
-      border: 1px solid #999;
-      background: #fff;
-      outline: none;
-    }
-    @media (max-width: 560px) {
-  input {
-    width: 90%;
-  }
-}
-
-
-    textarea {
-      font-family: Arial, Helvetica, sans-serif;
-      width: 90%;
-      font-size: 18px;
-      padding: 5px;
-      margin-bottom: 16px;
-      border: 1px solid #999;
-      background: #fff;
-      outline: none;
-      height: 80px;
-      resize: vertical;
-    }
-
-    input:hover, textarea:hover {
-      background: #f7f7f7;
-    }
-
-    input:focus, textarea:focus {
-      border-color: #1d4ed8;
-      background: #f0f4ff;
-    }
-
-    button {
-      padding: 5px;
-      font-size: 22px;
-      border: none;
-      color: white;
-      cursor: pointer;
-      border-radius: 5px;
-    }
-
-    .prev { background: #5b5b5b; }
-    .prev:hover { background: #888; }
-
-    .next { background: #1c7831; }
-    .next:hover { background: #2fbb52; }
-  </style>
+  <script src="script.js"></script>
 </body>
 </html>
