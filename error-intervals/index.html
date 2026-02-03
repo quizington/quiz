@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Quizington</title>
+   <link rel="icon" type="image/png" href="https://i.ibb.co/dJbzdRb3/R-1221e-modified.png">
+
+</head>
+<body>
+  <div class="quiz">
+
+    <img width="300px" src="https://i.ibb.co/LzNNg29Z/w23328er.png" alt="Quizington"><br>
+    <a href="https://quizington.github.io/" style="
+      display: inline-block;
+      padding: 5px 8px;
+      background: #1d4ed8;
+      color: white;
+      text-decoration: none;
+      border: 1px solid #0f2e8a;
+      font-size: 18px;
+    "
+    onmouseover="this.style.background='#4270ec'"
+    onmouseout="this.style.background='#1d4ed8'">← Home Page</a>
+    <hr>
+
+    <!-- QUIZ UI -->
+    <div id="quizUI">
+    <div id="quizTitle" style="width: 90%; background-color: #d6d6d6;font-size: 22px;">
+  <b></b>
+</div>
+<br>
+      <div class="question">Question 1/10</div>
+      <div class="questiontext">Loading...</div>
+
+<button class="copy3" id="copyIntervalBtn" style="background-color: rgb(104, 16, 85); font-size: 17px;">
+  Copy ≤ x &lt;
+</button>
+<style>
+  .copy3:hover {
+    background-color: rgb(143, 41, 117) !important;
+  }
+</style>
+
+
+<script>
+  const intervalText = "≤ x < ";
+
+  document.getElementById("copyIntervalBtn").addEventListener("click", () => {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(intervalText);
+    } else {
+      const tempInput = document.createElement("input");
+      tempInput.value = intervalText;
+      document.body.appendChild(tempInput);
+      tempInput.select();
+      document.execCommand("copy");
+      document.body.removeChild(tempInput);
+    }
+  });
+</script>
+
+
+      <textarea placeholder="Working (optional)"></textarea>
+      <input type="text" placeholder="Your answer" />
+
+      <div class="buttons">
+        <button class="prev" onclick="goPrev()">Previous</button>
+        <button class="next" onclick="goNext()">Next</button>
+      </div>
+    </div>
+
+    <!-- RESULTS -->
+    <div id="resultsBox" style="display:none; padding:20px; background-color:#dde6ff; margin-top:20px; border:1px solid #999;"></div>
+
+  </div>
+
+  <script>
+    document.querySelector("#quizTitle b").textContent = "Error Intervals";
+
+ // ---------------------------------------------------------
+// ROUNDING & TRUNCATION (NO CALCULATOR NEEDED)
+// NORMAL QUESTIONS + WORD PROBLEMS
+// ---------------------------------------------------------
+// ---------------------------------------------------------
+// ERROR INTERVALS (NO CALCULATOR NEEDED)
+// NORMAL QUESTIONS + WORD PROBLEMS
+// ---------------------------------------------------------
+const allQuestions = [
+
+  // -------------------------
+  // NORMAL QUESTIONS
+  // -------------------------
+
+  // EASY
+  { q: "A number is rounded to the nearest whole number and becomes 7. Write the error interval.", a: "6.5 ≤ x < 7.5" },
+  { q: "A length is rounded to 1 decimal place and becomes 4.3. Write the error interval.", a: "4.25 ≤ x < 4.35" },
+  { q: "A weight is rounded to the nearest 10 and becomes 50. Write the error interval.", a: "45 ≤ x < 55" },
+  { q: "A time is rounded to the nearest minute and becomes 12 minutes. Write the error interval.", a: "11.5 ≤ x < 12.5" },
+  { q: "A measurement is rounded to 1 decimal place and becomes 9.8. Write the error interval.", a: "9.75 ≤ x < 9.85" },
+
+  // MEDIUM
+  { q: "A number is rounded to the nearest 100 and becomes 300. Write the error interval.", a: "250 ≤ x < 350" },
+  { q: "A distance is rounded to 2 decimal places and becomes 3.14. Write the error interval.", a: "3.135 ≤ x < 3.145" },
+  { q: "A mass is rounded to the nearest whole number and becomes 42. Write the error interval.", a: "41.5 ≤ x < 42.5" },
+  { q: "A temperature is rounded to 1 decimal place and becomes 7.6. Write the error interval.", a: "7.55 ≤ x < 7.65" },
+  { q: "A height is rounded to the nearest 10 cm and becomes 120 cm. Write the error interval.", a: "115 ≤ x < 125" },
+
+  // HARD
+  { q: "A value is rounded to 2 decimal places and becomes 0.08. Write the error interval.", a: "0.075 ≤ x < 0.085" },
+  { q: "A number is rounded to the nearest 1000 and becomes 5000. Write the error interval.", a: "4500 ≤ x < 5500" },
+  { q: "A measurement is rounded to 1 decimal place and becomes 12.0. Write the error interval.", a: "11.95 ≤ x < 12.05" },
+  { q: "A time is rounded to the nearest 5 minutes and becomes 20 minutes. Write the error interval.", a: "17.5 ≤ x < 22.5" },
+  { q: "A reading is rounded to 2 decimal places and becomes 1.30. Write the error interval.", a: "1.295 ≤ x < 1.305" },
+
+
+  // -------------------------
+  // WORD PROBLEMS
+  // -------------------------
+
+  // EASY WORD PROBLEMS
+  { q: "A toy weighs 7 kg when rounded to the nearest kg. Write the error interval.", a: "6.5 ≤ x < 7.5" },
+  { q: "A bottle holds 4.3 L when rounded to 1 dp. Write the error interval.", a: "4.25 ≤ x < 4.35" },
+  { q: "A rope is 50 m long when rounded to the nearest 10 m. Write the error interval.", a: "45 ≤ x < 55" },
+  { q: "A journey takes 12 minutes when rounded to the nearest minute. Write the error interval.", a: "11.5 ≤ x < 12.5" },
+  { q: "A plank is 9.8 m long when rounded to 1 dp. Write the error interval.", a: "9.75 ≤ x < 9.85" },
+
+  // MEDIUM WORD PROBLEMS
+  { q: "A town has a population of 300 when rounded to the nearest 100. Write the error interval.", a: "250 ≤ x < 350" },
+  { q: "A pipe is measured as 3.14 m when rounded to 2 dp. Write the error interval.", a: "3.135 ≤ x < 3.145" },
+  { q: "A parcel weighs 42 kg when rounded to the nearest kg. Write the error interval.", a: "41.5 ≤ x < 42.5" },
+  { q: "A temperature reading shows 7.6°C when rounded to 1 dp. Write the error interval.", a: "7.55 ≤ x < 7.65" },
+  { q: "A tree is 120 cm tall when rounded to the nearest 10 cm. Write the error interval.", a: "115 ≤ x < 125" },
+
+  // HARD WORD PROBLEMS
+  { q: "A chemical reading is 0.08 g when rounded to 2 dp. Write the error interval.", a: "0.075 ≤ x < 0.085" },
+  { q: "A city has a population of 5000 when rounded to the nearest 1000. Write the error interval.", a: "4500 ≤ x < 5500" },
+  { q: "A beam is 12.0 m long when rounded to 1 dp. Write the error interval.", a: "11.95 ≤ x < 12.05" },
+  { q: "A bus arrives at 20 minutes when rounded to the nearest 5 minutes. Write the error interval.", a: "17.5 ≤ x < 22.5" },
+  { q: "A reading shows 1.30 A when rounded to 2 dp. Write the error interval.", a: "1.295 ≤ x < 1.305" }
+];
+
+
+
+
+
+
+
+    // -----------------------------
+    // Pick 10 random questions
+    // -----------------------------
+    let quizQuestions = [];
+    function pickRandomQuestions() {
+      quizQuestions = [...allQuestions]
+        .sort(() => Math.random() - 0.5)
+        .slice(0, 10);
+    }
+
+    // -----------------------------
+    // Quiz state
+    // -----------------------------
+    let current = 0;
+    let userAnswers = Array(10).fill("");
+    let userWorking = Array(10).fill("");
+
+    // -----------------------------
+    // DOM elements
+    // -----------------------------
+    const questionNumber = document.querySelector(".question");
+    const questionText = document.querySelector(".questiontext");
+    const answerInput = document.querySelector("input[type='text']");
+    const workingBox = document.querySelector("textarea");
+    const resultsBox = document.getElementById("resultsBox");
+    const quizUI = document.getElementById("quizUI");
+
+    // -----------------------------
+    // Load question
+    // -----------------------------
+    function loadQuestion() {
+      const q = quizQuestions[current];
+
+      questionNumber.textContent = `Question ${current + 1}/10`;
+      questionText.textContent = q.q;
+
+      answerInput.value = userAnswers[current];
+      workingBox.value = userWorking[current];
+    }
+
+    // Auto-save typing
+    answerInput.addEventListener("input", () => {
+      userAnswers[current] = answerInput.value;
+    });
+
+    workingBox.addEventListener("input", () => {
+      userWorking[current] = workingBox.value;
+    });
+
+    // -----------------------------
+    // Navigation
+    // -----------------------------
+    function goNext() {
+      userAnswers[current] = answerInput.value.trim();
+      userWorking[current] = workingBox.value.trim();
+
+      if (current === 9) {
+        showResults();
+        return;
+      }
+
+      current++;
+      loadQuestion();
+    }
+
+    function goPrev() {
+      if (current > 0) {
+        current--;
+        loadQuestion();
+      }
+    }
+
+    // -----------------------------
+    // Results
+    // -----------------------------
+    function showResults() {
+      quizUI.style.display = "none";
+      resultsBox.style.display = "block";
+
+      let correct = 0;
+      let breakdown = "";
+
+      quizQuestions.forEach((q, i) => {
+        const user = userAnswers[i];
+        const isCorrect = user == q.a;
+
+        if (isCorrect) correct++;
+
+        breakdown += `
+          <p style="font-size:18px; color:${isCorrect ? 'green' : 'darkred'};">
+            Question ${i + 1}: ${q.a}
+            ${!isCorrect ? `<br>You wrote: ${user}` : ""}
+          </p>
+        `;
+      });
+
+      const percent = Math.round((correct / 10) * 100);
+
+      resultsBox.innerHTML = `
+        <h1>Results</h1>
+        <br>
+        <h1>${correct}/10</h1>
+        <h2>${percent}%</h2>
+
+        <button onclick="restartQuiz()" 
+          style="background-color: #1c7831; color: white; font-size: 22px; border:none; padding:8px;">
+          Take this quiz again
+        </button>
+
+        <h3 style="margin-top:20px;">A breakdown:</h3>
+        ${breakdown}
+      `;
+    }
+
+    // -----------------------------
+    // Restart
+    // -----------------------------
+    function restartQuiz() {
+      pickRandomQuestions();
+      current = 0;
+      userAnswers = Array(10).fill("");
+      userWorking = Array(10).fill("");
+
+      resultsBox.style.display = "none";
+      quizUI.style.display = "block";
+
+      loadQuestion();
+    }
+
+    // -----------------------------
+    // Start quiz
+    // -----------------------------
+    pickRandomQuestions();
+    loadQuestion();
+  </script>
+  
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial;
+      background: #eee;
+      display: flex;
+      justify-content: center;
+      padding: 40px 16px;
+    }
+
+    .quiz {
+      width: 100%;
+      max-width: 500px;
+      background: #fff;
+      border: 1px solid #ccc;
+      padding: 20px;
+    }
+
+    h1 {
+      font-size: 30px;
+      margin-bottom: 10px;
+      margin-top: 5px;
+    }
+
+    .question {
+      font-size: 22px;
+      margin-bottom: 10px;
+    }
+
+    .questiontext {
+      font-weight: bold;
+      font-size: 20px;
+      margin-bottom: 20px;
+      background: #dde6ff;
+      padding: 6px 10px;
+      color: #1d4ed8;
+      display: inline-block;
+    }
+
+    input {
+      width: 29%;
+      font-size: 20px;
+      padding: 5px;
+      margin-bottom: 16px;
+      border: 1px solid #999;
+      background: #fff;
+      outline: none;
+    }
+    @media (max-width: 560px) {
+  input {
+    width: 90%;
+  }
+}
+
+
+    textarea {
+      font-family: Arial, Helvetica, sans-serif;
+      width: 90%;
+      font-size: 18px;
+      padding: 5px;
+      margin-bottom: 16px;
+      border: 1px solid #999;
+      background: #fff;
+      outline: none;
+      height: 80px;
+      resize: vertical;
+    }
+
+    input:hover, textarea:hover {
+      background: #f7f7f7;
+    }
+
+    input:focus, textarea:focus {
+      border-color: #1d4ed8;
+      background: #f0f4ff;
+    }
+
+    button {
+      padding: 5px;
+      font-size: 22px;
+      border: none;
+      color: white;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+
+    .prev { background: #5b5b5b; }
+    .prev:hover { background: #888; }
+
+    .next { background: #1c7831; }
+    .next:hover { background: #2fbb52; }
+  </style>
+</body>
+</html>
