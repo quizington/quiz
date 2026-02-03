@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Quizington</title>
+   <link rel="icon" type="image/png" href="https://i.ibb.co/dJbzdRb3/R-1221e-modified.png">
+
+</head>
+<body>
+  <div class="quiz">
+
+    <img width="300px" src="https://i.ibb.co/LzNNg29Z/w23328er.png" alt="Quizington"><br>
+    <a href="https://quizington.github.io/" style="
+      display: inline-block;
+      padding: 5px 8px;
+      background: #1d4ed8;
+      color: white;
+      text-decoration: none;
+      border: 1px solid #0f2e8a;
+      font-size: 18px;
+    "
+    onmouseover="this.style.background='#4270ec'"
+    onmouseout="this.style.background='#1d4ed8'">← Home Page</a>
+    <hr>
+
+    <!-- QUIZ UI -->
+    <div id="quizUI">
+    <div id="quizTitle" style="width: 90%; background-color: #d6d6d6;font-size: 22px;">
+  <b></b>
+</div>
+<br>
+      <div class="question">Question 1/10</div>
+      <div class="questiontext">Loading...</div>
+
+     
+
+
+      <textarea placeholder="Working (optional)"></textarea>
+      <input type="text" placeholder="Your answer" />
+
+      <div class="buttons">
+        <button class="prev" onclick="goPrev()">Previous</button>
+        <button class="next" onclick="goNext()">Next</button>
+      </div>
+    </div>
+
+    <!-- RESULTS -->
+    <div id="resultsBox" style="display:none; padding:20px; background-color:#dde6ff; margin-top:20px; border:1px solid #999;"></div>
+
+  </div>
+
+  <script>
+    document.querySelector("#quizTitle b").textContent = "Compound Interest & Depreciation";
+
+   // -----------------------------
+// Question bank (HCF & LCM)
+// -----------------------------
+// ---------------------------------------------------------
+// FRACTIONS, DECIMALS & PERCENTAGES (CONVERSION)
+// NORMAL QUESTIONS + WORD PROBLEMS
+// ---------------------------------------------------------
+
+
+const allQuestions = [
+
+  // -------------------------
+  // COMPOUND INTEREST (YEARLY)
+  // -------------------------
+
+  { q: "An amount of 100 grows by 5% each year for 3 years. What is the final value?", 
+    a: "115.76" },
+
+  { q: "An amount of 200 grows by 8% each year for 2 years. What is the final value?", 
+    a: "233.28" },
+
+  { q: "An amount of 150 grows by 10% each year for 3 years. What is the final value?", 
+    a: "199.65" },
+
+  { q: "An amount of 80 grows by 12% each year for 2 years. What is the final value?", 
+    a: "100.35" },
+
+  { q: "An amount of 300 grows by 6% each year for 4 years. What is the final value?", 
+    a: "378.86" },
+
+
+  // -------------------------
+  // COMPOUND INTEREST (HARDER)
+  // -------------------------
+
+  { q: "An amount of 500 grows by 4% each year for 5 years. What is the final value?", 
+    a: "608.33" },
+
+  { q: "An amount of 250 grows by 7% each year for 3 years. What is the final value?", 
+    a: "306.48" },
+
+  { q: "An amount of 120 grows by 9% each year for 4 years. What is the final value?", 
+    a: "169.02" },
+
+  { q: "An amount of 90 grows by 11% each year for 3 years. What is the final value?", 
+    a: "120.03" },
+
+  { q: "An amount of 400 grows by 3% each year for 6 years. What is the final value?", 
+    a: "477.46" },
+
+
+  // -------------------------
+  // COMPOUND DEPRECIATION
+  // -------------------------
+
+  { q: "A value of 100 depreciates by 10% each year for 3 years. What is the final value?", 
+    a: "72.9" },
+
+  { q: "A value of 300 depreciates by 15% each year for 2 years. What is the final value?", 
+    a: "216.75" },
+
+  { q: "A value of 500 depreciates by 8% each year for 4 years. What is the final value?", 
+    a: "364.99" },
+
+  { q: "A value of 200 depreciates by 12% each year for 3 years. What is the final value?", 
+    a: "138.05" },
+
+  { q: "A value of 150 depreciates by 5% each year for 5 years. What is the final value?", 
+    a: "116.34" },
+
+
+  // -------------------------
+  // COMPOUND DEPRECIATION (HARDER)
+  // -------------------------
+
+  { q: "A value of 800 depreciates by 7% each year for 3 years. What is the final value?", 
+    a: "680.59" },
+
+  { q: "A value of 600 depreciates by 9% each year for 4 years. What is the final value?", 
+    a: "412.46" },
+
+  { q: "A value of 1000 depreciates by 6% each year for 5 years. What is the final value?", 
+    a: "735.03" },
+
+  { q: "A value of 250 depreciates by 14% each year for 2 years. What is the final value?", 
+    a: "184.95" },
+
+  { q: "A value of 350 depreciates by 11% each year for 3 years. What is the final value?", 
+    a: "241.79" }
+];
+
+
+
+
+
+
+   // -----------------------------
+    // Pick 10 random questions
+    // -----------------------------
+    let quizQuestions = [];
+    function pickRandomQuestions() {
+      quizQuestions = [...allQuestions]
+        .sort(() => Math.random() - 0.5)
+        .slice(0, 10);
+    }
+
+    // -----------------------------
+    // Quiz state
+    // -----------------------------
+    let current = 0;
+    let userAnswers = Array(10).fill("");
+    let userWorking = Array(10).fill("");
+
+    // -----------------------------
+    // DOM elements
+    // -----------------------------
+    const questionNumber = document.querySelector(".question");
+    const questionText = document.querySelector(".questiontext");
+    const answerInput = document.querySelector("input[type='text']");
+    const workingBox = document.querySelector("textarea");
+    const resultsBox = document.getElementById("resultsBox");
+    const quizUI = document.getElementById("quizUI");
+
+    // -----------------------------
+    // Load question
+    // -----------------------------
+    function loadQuestion() {
+      const q = quizQuestions[current];
+
+      questionNumber.textContent = `Question ${current + 1}/10`;
+      questionText.textContent = q.q;
+
+      answerInput.value = userAnswers[current];
+      workingBox.value = userWorking[current];
+    }
+
+    // Auto-save typing
+    answerInput.addEventListener("input", () => {
+      userAnswers[current] = answerInput.value;
+    });
+
+    workingBox.addEventListener("input", () => {
+      userWorking[current] = workingBox.value;
+    });
+
+    // -----------------------------
+    // Navigation
+    // -----------------------------
+    function goNext() {
+      userAnswers[current] = answerInput.value.trim();
+      userWorking[current] = workingBox.value.trim();
+
+      if (current === 9) {
+        showResults();
+        return;
+      }
+
+      current++;
+      loadQuestion();
+    }
+
+    function goPrev() {
+      if (current > 0) {
+        current--;
+        loadQuestion();
+      }
+    }
+
+    // -----------------------------
+    // Results
+    // -----------------------------
+    function showResults() {
+      quizUI.style.display = "none";
+      resultsBox.style.display = "block";
+
+      let correct = 0;
+      let breakdown = "";
+
+      quizQuestions.forEach((q, i) => {
+        const user = userAnswers[i];
+        const isCorrect = user == q.a;
+
+        if (isCorrect) correct++;
+
+        breakdown += `
+          <p style="font-size:18px; color:${isCorrect ? 'green' : 'darkred'};">
+            Question ${i + 1}: ${q.a}
+            ${!isCorrect ? `<br>You wrote: ${user}` : ""}
+          </p>
+        `;
+      });
+
+      const percent = Math.round((correct / 10) * 100);
+
+      resultsBox.innerHTML = `
+        <h1>Results</h1>
+        <br>
+        <h1>${correct}/10</h1>
+        <h2>${percent}%</h2>
+
+        <button onclick="restartQuiz()" 
+          style="background-color: #1c7831; color: white; font-size: 22px; border:none; padding:8px;">
+          Take this quiz again
+        </button>
+
+        <h3 style="margin-top:20px;">A breakdown:</h3>
+        ${breakdown}
+      `;
+    }
+
+    // -----------------------------
+    // Restart
+    // -----------------------------
+    function restartQuiz() {
+      pickRandomQuestions();
+      current = 0;
+      userAnswers = Array(10).fill("");
+      userWorking = Array(10).fill("");
+
+      resultsBox.style.display = "none";
+      quizUI.style.display = "block";
+
+      loadQuestion();
+    }
+
+    // -----------------------------
+    // Start quiz
+    // -----------------------------
+    pickRandomQuestions();
+    loadQuestion();
+  </script>
+  
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial;
+      background: #eee;
+      display: flex;
+      justify-content: center;
+      padding: 40px 16px;
+    }
+
+    .quiz {
+      width: 100%;
+      max-width: 500px;
+      background: #fff;
+      border: 1px solid #ccc;
+      padding: 20px;
+    }
+
+    h1 {
+      font-size: 30px;
+      margin-bottom: 10px;
+      margin-top: 5px;
+    }
+
+    .question {
+      font-size: 22px;
+      margin-bottom: 10px;
+    }
+
+    .questiontext {
+      font-weight: bold;
+      font-size: 20px;
+      margin-bottom: 20px;
+      background: #dde6ff;
+      padding: 6px 10px;
+      color: #1d4ed8;
+      display: inline-block;
+    }
+
+    input {
+      width: 29%;
+      font-size: 20px;
+      padding: 5px;
+      margin-bottom: 16px;
+      border: 1px solid #999;
+      background: #fff;
+      outline: none;
+    }
+    @media (max-width: 560px) {
+  input {
+    width: 90%;
+  }
+}
+
+
+    textarea {
+      font-family: Arial, Helvetica, sans-serif;
+      width: 90%;
+      font-size: 18px;
+      padding: 5px;
+      margin-bottom: 16px;
+      border: 1px solid #999;
+      background: #fff;
+      outline: none;
+      height: 80px;
+      resize: vertical;
+    }
+
+    input:hover, textarea:hover {
+      background: #f7f7f7;
+    }
+
+    input:focus, textarea:focus {
+      border-color: #1d4ed8;
+      background: #f0f4ff;
+    }
+
+    button {
+      padding: 5px;
+      font-size: 22px;
+      border: none;
+      color: white;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+
+    .prev { background: #5b5b5b; }
+    .prev:hover { background: #888; }
+
+    .next { background: #1c7831; }
+    .next:hover { background: #2fbb52; }
+  </style>
+</body>
+</html>
