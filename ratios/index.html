@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Quizington</title>
+   <link rel="icon" type="image/png" href="https://i.ibb.co/dJbzdRb3/R-1221e-modified.png">
+
+</head>
+<body>
+  <div class="quiz">
+
+    <img width="300px" src="https://i.ibb.co/LzNNg29Z/w23328er.png" alt="Quizington"><br>
+    <a href="https://quizington.github.io/" style="
+      display: inline-block;
+      padding: 5px 8px;
+      background: #1d4ed8;
+      color: white;
+      text-decoration: none;
+      border: 1px solid #0f2e8a;
+      font-size: 18px;
+    "
+    onmouseover="this.style.background='#4270ec'"
+    onmouseout="this.style.background='#1d4ed8'">← Home Page</a>
+    <hr>
+
+    <!-- QUIZ UI -->
+    <div id="quizUI">
+    <div id="quizTitle" style="width: 90%; background-color: #d6d6d6;font-size: 22px;">
+  <b></b>
+</div>
+<br>
+      <div class="question">Question 1/10</div>
+      <div class="questiontext">Loading...</div>
+
+     
+
+
+      <textarea placeholder="Working (optional)"></textarea>
+      <input type="text" placeholder="Your answer" />
+
+      <div class="buttons">
+        <button class="prev" onclick="goPrev()">Previous</button>
+        <button class="next" onclick="goNext()">Next</button>
+      </div>
+    </div>
+
+    <!-- RESULTS -->
+    <div id="resultsBox" style="display:none; padding:20px; background-color:#dde6ff; margin-top:20px; border:1px solid #999;"></div>
+
+  </div>
+
+  <script>
+    document.querySelector("#quizTitle b").textContent = "Ratio Fraction Problems";
+
+   // -----------------------------
+// Question bank (HCF & LCM)
+// -----------------------------
+// ---------------------------------------------------------
+// FRACTIONS, DECIMALS & PERCENTAGES (CONVERSION)
+// NORMAL QUESTIONS + WORD PROBLEMS
+// ---------------------------------------------------------
+
+
+const allQuestions = [
+
+  // -------------------------
+  // RATIO → FRACTION
+  // -------------------------
+
+  // EASY
+  { q: "Write the fraction of the ratio 1:3 that is the first part.", a: "1/4" },
+  { q: "In the ratio 2:5, what fraction is the first part?", a: "2/7" },
+  { q: "In the ratio 3:1, what fraction is the second part?", a: "1/4" },
+  { q: "In the ratio 4:6, what fraction is the first part?", a: "4/10" },
+  { q: "In the ratio 5:3, what fraction is the second part?", a: "3/8" },
+
+  // MEDIUM
+  { q: "In the ratio 3:4:5, what fraction is the first part?", a: "3/12" },
+  { q: "In the ratio 2:3:5, what fraction is the last part?", a: "5/10" },
+  { q: "In the ratio 6:2, what fraction is the first part?", a: "6/8" },
+  { q: "In the ratio 7:1:2, what fraction is the middle part?", a: "1/10" },
+  { q: "In the ratio 4:3:3, what fraction is the last part?", a: "3/10" },
+
+  // HARD
+  { q: "In the ratio 5:7:8, what fraction is the first part?", a: "5/20" },
+  { q: "In the ratio 9:3:6, what fraction is the second part?", a: "3/18" },
+  { q: "In the ratio 8:1:3, what fraction is the last part?", a: "3/12" },
+  { q: "In the ratio 10:4, what fraction is the second part?", a: "4/14" },
+  { q: "In the ratio 12:3:5, what fraction is the first part?", a: "12/20" },
+
+
+  // -------------------------
+  // FRACTION → RATIO
+  // -------------------------
+
+  // EASY
+  { q: "Write 1/3 as a ratio part of a whole.", a: "1:2" },
+  { q: "Write 1/4 as a ratio part of a whole.", a: "1:3" },
+  { q: "Write 2/5 as a ratio part of a whole.", a: "2:3" },
+  { q: "Write 3/8 as a ratio part of a whole.", a: "3:5" },
+  { q: "Write 1/6 as a ratio part of a whole.", a: "1:5" },
+
+  // MEDIUM
+  { q: "Write 3/7 as a ratio part of a whole.", a: "3:4" },
+  { q: "Write 4/9 as a ratio part of a whole.", a: "4:5" },
+  { q: "Write 5/12 as a ratio part of a whole.", a: "5:7" },
+  { q: "Write 2/9 as a ratio part of a whole.", a: "2:7" },
+  { q: "Write 7/10 as a ratio part of a whole.", a: "7:3" },
+
+  // HARD
+  { q: "Write 5/14 as a ratio part of a whole.", a: "5:9" },
+  { q: "Write 3/11 as a ratio part of a whole.", a: "3:8" },
+  { q: "Write 4/13 as a ratio part of a whole.", a: "4:9" },
+  { q: "Write 9/20 as a ratio part of a whole.", a: "9:11" },
+  { q: "Write 11/30 as a ratio part of a whole.", a: "11:19" },
+
+
+  // -------------------------
+  // WORD PROBLEMS
+  // -------------------------
+
+  // EASY
+  { q: "A class has boys:girls = 3:2. What fraction are boys?", a: "3/5" },
+  { q: "A bag has red:blue = 1:4. What fraction are blue?", a: "4/5" },
+  { q: "A team has 2 defenders and 3 attackers. What fraction are attackers?", a: "3/5" },
+  { q: "A recipe uses sugar:flour = 1:3. What fraction is sugar?", a: "1/4" },
+  { q: "A group has cats:dogs = 5:1. What fraction are cats?", a: "5/6" },
+
+  // MEDIUM
+  { q: "A school has A:B:C = 2:3:5. What fraction are in group C?", a: "5/10" },
+  { q: "A box has red:blue:green = 4:1:3. What fraction are green?", a: "3/8" },
+  { q: "A club has juniors:seniors = 7:3. What fraction are seniors?", a: "3/10" },
+  { q: "A bag has 6 red, 3 blue. What fraction are blue?", a: "3/9" },
+  { q: "A team has 8 boys, 4 girls. What fraction are girls?", a: "4/12" },
+
+  // HARD
+  { q: "A class has A:B:C = 5:7:8. What fraction are in group B?", a: "7/20" },
+  { q: "A box has 9 red, 3 blue, 6 green. What fraction are green?", a: "6/18" },
+  { q: "A club has 10 juniors, 4 seniors. What fraction are juniors?", a: "10/14" },
+  { q: "A team has A:B = 12:5. What fraction are B?", a: "5/17" },
+  { q: "A bag has A:B:C = 8:1:3. What fraction are A?", a: "8/12" }
+];
+
+
+
+
+   // -----------------------------
+    // Pick 10 random questions
+    // -----------------------------
+    let quizQuestions = [];
+    function pickRandomQuestions() {
+      quizQuestions = [...allQuestions]
+        .sort(() => Math.random() - 0.5)
+        .slice(0, 10);
+    }
+
+    // -----------------------------
+    // Quiz state
+    // -----------------------------
+    let current = 0;
+    let userAnswers = Array(10).fill("");
+    let userWorking = Array(10).fill("");
+
+    // -----------------------------
+    // DOM elements
+    // -----------------------------
+    const questionNumber = document.querySelector(".question");
+    const questionText = document.querySelector(".questiontext");
+    const answerInput = document.querySelector("input[type='text']");
+    const workingBox = document.querySelector("textarea");
+    const resultsBox = document.getElementById("resultsBox");
+    const quizUI = document.getElementById("quizUI");
+
+    // -----------------------------
+    // Load question
+    // -----------------------------
+    function loadQuestion() {
+      const q = quizQuestions[current];
+
+      questionNumber.textContent = `Question ${current + 1}/10`;
+      questionText.textContent = q.q;
+
+      answerInput.value = userAnswers[current];
+      workingBox.value = userWorking[current];
+    }
+
+    // Auto-save typing
+    answerInput.addEventListener("input", () => {
+      userAnswers[current] = answerInput.value;
+    });
+
+    workingBox.addEventListener("input", () => {
+      userWorking[current] = workingBox.value;
+    });
+
+    // -----------------------------
+    // Navigation
+    // -----------------------------
+    function goNext() {
+      userAnswers[current] = answerInput.value.trim();
+      userWorking[current] = workingBox.value.trim();
+
+      if (current === 9) {
+        showResults();
+        return;
+      }
+
+      current++;
+      loadQuestion();
+    }
+
+    function goPrev() {
+      if (current > 0) {
+        current--;
+        loadQuestion();
+      }
+    }
+
+    // -----------------------------
+    // Results
+    // -----------------------------
+    function showResults() {
+      quizUI.style.display = "none";
+      resultsBox.style.display = "block";
+
+      let correct = 0;
+      let breakdown = "";
+
+      quizQuestions.forEach((q, i) => {
+        const user = userAnswers[i];
+        const isCorrect = user == q.a;
+
+        if (isCorrect) correct++;
+
+        breakdown += `
+          <p style="font-size:18px; color:${isCorrect ? 'green' : 'darkred'};">
+            Question ${i + 1}: ${q.a}
+            ${!isCorrect ? `<br>You wrote: ${user}` : ""}
+          </p>
+        `;
+      });
+
+      const percent = Math.round((correct / 10) * 100);
+
+      resultsBox.innerHTML = `
+        <h1>Results</h1>
+        <br>
+        <h1>${correct}/10</h1>
+        <h2>${percent}%</h2>
+
+        <button onclick="restartQuiz()" 
+          style="background-color: #1c7831; color: white; font-size: 22px; border:none; padding:8px;">
+          Take this quiz again
+        </button>
+
+        <h3 style="margin-top:20px;">A breakdown:</h3>
+        ${breakdown}
+      `;
+    }
+
+    // -----------------------------
+    // Restart
+    // -----------------------------
+    function restartQuiz() {
+      pickRandomQuestions();
+      current = 0;
+      userAnswers = Array(10).fill("");
+      userWorking = Array(10).fill("");
+
+      resultsBox.style.display = "none";
+      quizUI.style.display = "block";
+
+      loadQuestion();
+    }
+
+    // -----------------------------
+    // Start quiz
+    // -----------------------------
+    pickRandomQuestions();
+    loadQuestion();
+  </script>
+  
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial;
+      background: #eee;
+      display: flex;
+      justify-content: center;
+      padding: 40px 16px;
+    }
+
+    .quiz {
+      width: 100%;
+      max-width: 500px;
+      background: #fff;
+      border: 1px solid #ccc;
+      padding: 20px;
+    }
+
+    h1 {
+      font-size: 30px;
+      margin-bottom: 10px;
+      margin-top: 5px;
+    }
+
+    .question {
+      font-size: 22px;
+      margin-bottom: 10px;
+    }
+
+    .questiontext {
+      font-weight: bold;
+      font-size: 20px;
+      margin-bottom: 20px;
+      background: #dde6ff;
+      padding: 6px 10px;
+      color: #1d4ed8;
+      display: inline-block;
+    }
+
+    input {
+      width: 29%;
+      font-size: 20px;
+      padding: 5px;
+      margin-bottom: 16px;
+      border: 1px solid #999;
+      background: #fff;
+      outline: none;
+    }
+    @media (max-width: 560px) {
+  input {
+    width: 90%;
+  }
+}
+
+
+    textarea {
+      font-family: Arial, Helvetica, sans-serif;
+      width: 90%;
+      font-size: 18px;
+      padding: 5px;
+      margin-bottom: 16px;
+      border: 1px solid #999;
+      background: #fff;
+      outline: none;
+      height: 80px;
+      resize: vertical;
+    }
+
+    input:hover, textarea:hover {
+      background: #f7f7f7;
+    }
+
+    input:focus, textarea:focus {
+      border-color: #1d4ed8;
+      background: #f0f4ff;
+    }
+
+    button {
+      padding: 5px;
+      font-size: 22px;
+      border: none;
+      color: white;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+
+    .prev { background: #5b5b5b; }
+    .prev:hover { background: #888; }
+
+    .next { background: #1c7831; }
+    .next:hover { background: #2fbb52; }
+  </style>
+</body>
+</html>
