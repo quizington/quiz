@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Quizington</title>
+   <link rel="icon" type="image/png" href="https://i.ibb.co/dJbzdRb3/R-1221e-modified.png">
+
+</head>
+<body>
+  <div class="quiz">
+
+    <img width="300px" src="https://i.ibb.co/LzNNg29Z/w23328er.png" alt="Quizington"><br>
+    <a href="https://quizington.github.io/" style="
+      display: inline-block;
+      padding: 5px 8px;
+      background: #1d4ed8;
+      color: white;
+      text-decoration: none;
+      border: 1px solid #0f2e8a;
+      font-size: 18px;
+    "
+    onmouseover="this.style.background='#4270ec'"
+    onmouseout="this.style.background='#1d4ed8'">← Home Page</a>
+    <hr>
+
+    <!-- QUIZ UI -->
+    <div id="quizUI">
+    <div id="quizTitle" style="width: 90%; background-color: #d6d6d6;font-size: 22px;">
+  <b></b>
+</div>
+<br>
+      <div class="question">Question 1/10</div>
+      <div class="questiontext">Loading...</div>
+
+      <textarea placeholder="Working (optional)"></textarea>
+      <input type="text" placeholder="Your answer" />
+
+      <div class="buttons">
+        <button class="prev" onclick="goPrev()">Previous</button>
+        <button class="next" onclick="goNext()">Next</button>
+      </div>
+    </div>
+
+    <!-- RESULTS -->
+    <div id="resultsBox" style="display:none; padding:20px; background-color:#dde6ff; margin-top:20px; border:1px solid #999;"></div>
+
+  </div>
+
+  <script>
+    document.querySelector("#quizTitle b").textContent = "Changing the subject (basic)";
+
+   // -----------------------------
+// Question bank (HCF & LCM)
+// -----------------------------
+// ---------------------------------------------------------
+// FRACTIONS, DECIMALS & PERCENTAGES (CONVERSION)
+// NORMAL QUESTIONS + WORD PROBLEMS
+// ---------------------------------------------------------
+
+const allQuestions = [
+
+  // -------------------------
+  // CHANGING THE SUBJECT (BASIC)
+  // -------------------------
+
+  // EASY
+  { q: "Make x the subject: y = x + 7", a: "x = y - 7" },
+  { q: "Make x the subject: y = 3x", a: "x = y / 3" },
+  { q: "Make a the subject: b = a - 5", a: "a = b + 5" },
+  { q: "Make h the subject: A = 4h", a: "h = A / 4" },
+  { q: "Make x the subject: y = 2x + 1", a: "x = (y - 1) / 2" },
+
+  // MEDIUM
+  { q: "Make x the subject: y = 5x - 3", a: "x = (y + 3) / 5" },
+  { q: "Make a the subject: b = 2a + 7", a: "a = (b - 7) / 2" },
+  { q: "Make r the subject: C = 2πr", a: "r = C / (2π)" },
+  { q: "Make x the subject: y = (x / 4)", a: "x = 4y" },
+  { q: "Make t the subject: d = vt", a: "t = d / v" },
+
+  // HARD
+  { q: "Make x the subject: y = (3x + 2) / 5", a: "x = (5y - 2) / 3" },
+  { q: "Make a the subject: b = (a - 4) / 6", a: "a = 6b + 4" },
+  { q: "Make x the subject: y = 7 - 2x", a: "x = (7 - y) / 2" },
+  { q: "Make h the subject: A = (h + 3) / 2", a: "h = 2A - 3" },
+  { q: "Make x the subject: y = (4 - x) / 3", a: "x = 4 - 3y" },
+
+  { q: "Make x the subject: y = x - 4", a: "x = y + 4" },
+{ q: "Make x the subject: y = 2 + x", a: "x = y - 2" },
+{ q: "Make a the subject: b = 3 + a", a: "a = b - 3" },
+{ q: "Make t the subject: d = t / 5", a: "t = 5d" },
+{ q: "Make x the subject: y = 4x", a: "x = y / 4" },
+
+{ q: "Make h the subject: A = h - 9", a: "h = A + 9" },
+{ q: "Make x the subject: y = x / 7", a: "x = 7y" },
+{ q: "Make p the subject: q = p + 12", a: "p = q - 12" },
+{ q: "Make x the subject: y = 6 + x", a: "x = y - 6" },
+{ q: "Make k the subject: m = 2k", a: "k = m / 2" },
+
+{ q: "Make x the subject: y = 9x", a: "x = y / 9" },
+{ q: "Make r the subject: C = r + 10", a: "r = C - 10" },
+{ q: "Make x the subject: y = x / 3", a: "x = 3y" },
+{ q: "Make a the subject: b = 4a", a: "a = b / 4" },
+{ q: "Make x the subject: y = x + 11", a: "x = y - 11" },
+
+{ q: "Make t the subject: s = 8t", a: "t = s / 8" },
+{ q: "Make x the subject: y = x - 15", a: "x = y + 15" },
+{ q: "Make h the subject: A = 3h", a: "h = A / 3" },
+{ q: "Make x the subject: y = x + 2", a: "x = y - 2" },
+{ q: "Make p the subject: q = p / 4", a: "p = 4q" },
+{ q: "Make x the subject: y = 3x + 4", a: "x = (y - 4) / 3" },
+{ q: "Make a the subject: b = 5a - 2", a: "a = (b + 2) / 5" },
+{ q: "Make x the subject: y = (x + 7) / 2", a: "x = 2y - 7" },
+{ q: "Make t the subject: d = 4t - 3", a: "t = (d + 3) / 4" },
+{ q: "Make x the subject: y = 6 - 2x", a: "x = (6 - y) / 2" },
+
+{ q: "Make p the subject: q = 3p + 9", a: "p = (q - 9) / 3" },
+{ q: "Make x the subject: y = (3x - 1) / 4", a: "x = (4y + 1) / 3" },
+{ q: "Make h the subject: A = 2h + 5", a: "h = (A - 5) / 2" },
+{ q: "Make x the subject: y = 9 - x", a: "x = 9 - y" },
+{ q: "Make r the subject: C = 5r + 2", a: "r = (C - 2) / 5" },
+
+{ q: "Make x the subject: y = (x - 4) / 3", a: "x = 3y + 4" },
+{ q: "Make a the subject: b = 7a + 1", a: "a = (b - 1) / 7" },
+{ q: "Make x the subject: y = 2x - 11", a: "x = (y + 11) / 2" },
+{ q: "Make t the subject: d = (t + 6) / 5", a: "t = 5d - 6" },
+{ q: "Make x the subject: y = 4 - 3x", a: "x = (4 - y) / 3" },
+
+{ q: "Make p the subject: q = (p - 8) / 2", a: "p = 2q + 8" },
+{ q: "Make x the subject: y = 10 + 4x", a: "x = (y - 10) / 4" },
+{ q: "Make h the subject: A = (3h + 2) / 4", a: "h = (4A - 2) / 3" },
+{ q: "Make x the subject: y = (5 - x) / 2", a: "x = 5 - 2y" },
+{ q: "Make r the subject: C = (r + 9) / 3", a: "r = 3C - 9" },
+
+];
+
+
+
+
+
+    // -----------------------------
+    // Pick 10 random questions
+    // -----------------------------
+    let quizQuestions = [];
+    function pickRandomQuestions() {
+      quizQuestions = [...allQuestions]
+        .sort(() => Math.random() - 0.5)
+        .slice(0, 10);
+    }
+
+    // -----------------------------
+    // Quiz state
+    // -----------------------------
+    let current = 0;
+    let userAnswers = Array(10).fill("");
+    let userWorking = Array(10).fill("");
+
+    // -----------------------------
+    // DOM elements
+    // -----------------------------
+    const questionNumber = document.querySelector(".question");
+    const questionText = document.querySelector(".questiontext");
+    const answerInput = document.querySelector("input[type='text']");
+    const workingBox = document.querySelector("textarea");
+    const resultsBox = document.getElementById("resultsBox");
+    const quizUI = document.getElementById("quizUI");
+
+    // -----------------------------
+    // Load question
+    // -----------------------------
+    function loadQuestion() {
+      const q = quizQuestions[current];
+
+      questionNumber.textContent = `Question ${current + 1}/10`;
+      questionText.textContent = q.q;
+
+      answerInput.value = userAnswers[current];
+      workingBox.value = userWorking[current];
+    }
+
+    // Auto-save typing
+    answerInput.addEventListener("input", () => {
+      userAnswers[current] = answerInput.value;
+    });
+
+    workingBox.addEventListener("input", () => {
+      userWorking[current] = workingBox.value;
+    });
+
+    // -----------------------------
+    // Navigation
+    // -----------------------------
+    function goNext() {
+      userAnswers[current] = answerInput.value.trim();
+      userWorking[current] = workingBox.value.trim();
+
+      if (current === 9) {
+        showResults();
+        return;
+      }
+
+      current++;
+      loadQuestion();
+    }
+
+    function goPrev() {
+      if (current > 0) {
+        current--;
+        loadQuestion();
+      }
+    }
+
+    // -----------------------------
+    // Results
+    // -----------------------------
+    function showResults() {
+      quizUI.style.display = "none";
+      resultsBox.style.display = "block";
+
+      let correct = 0;
+      let breakdown = "";
+
+      quizQuestions.forEach((q, i) => {
+        const user = userAnswers[i];
+        const isCorrect = user == q.a;
+
+        if (isCorrect) correct++;
+
+        breakdown += `
+          <p style="font-size:18px; color:${isCorrect ? 'green' : 'darkred'};">
+            Question ${i + 1}: ${q.a}
+            ${!isCorrect ? `<br>You wrote: ${user}` : ""}
+          </p>
+        `;
+      });
+
+      const percent = Math.round((correct / 10) * 100);
+
+      resultsBox.innerHTML = `
+        <h1>Results</h1>
+        <br>
+        <h1>${correct}/10</h1>
+        <h2>${percent}%</h2>
+
+        <button onclick="restartQuiz()" 
+          style="background-color: #1c7831; color: white; font-size: 22px; border:none; padding:8px;">
+          Take this quiz again
+        </button>
+
+        <h3 style="margin-top:20px;">A breakdown:</h3>
+        ${breakdown}
+      `;
+    }
+
+    // -----------------------------
+    // Restart
+    // -----------------------------
+    function restartQuiz() {
+      pickRandomQuestions();
+      current = 0;
+      userAnswers = Array(10).fill("");
+      userWorking = Array(10).fill("");
+
+      resultsBox.style.display = "none";
+      quizUI.style.display = "block";
+
+      loadQuestion();
+    }
+
+    // -----------------------------
+    // Start quiz
+    // -----------------------------
+    pickRandomQuestions();
+    loadQuestion();
+  </script>
+  
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial;
+      background: #eee;
+      display: flex;
+      justify-content: center;
+      padding: 40px 16px;
+    }
+
+    .quiz {
+      width: 100%;
+      max-width: 500px;
+      background: #fff;
+      border: 1px solid #ccc;
+      padding: 20px;
+    }
+
+    h1 {
+      font-size: 30px;
+      margin-bottom: 10px;
+      margin-top: 5px;
+    }
+
+    .question {
+      font-size: 22px;
+      margin-bottom: 10px;
+    }
+
+    .questiontext {
+      font-weight: bold;
+      font-size: 20px;
+      margin-bottom: 20px;
+      background: #dde6ff;
+      padding: 6px 10px;
+      color: #1d4ed8;
+      display: inline-block;
+    }
+
+    input {
+      width: 29%;
+      font-size: 20px;
+      padding: 5px;
+      margin-bottom: 16px;
+      border: 1px solid #999;
+      background: #fff;
+      outline: none;
+    }
+    @media (max-width: 560px) {
+  input {
+    width: 90%;
+  }
+}
+
+
+    textarea {
+      font-family: Arial, Helvetica, sans-serif;
+      width: 90%;
+      font-size: 18px;
+      padding: 5px;
+      margin-bottom: 16px;
+      border: 1px solid #999;
+      background: #fff;
+      outline: none;
+      height: 80px;
+      resize: vertical;
+    }
+
+    input:hover, textarea:hover {
+      background: #f7f7f7;
+    }
+
+    input:focus, textarea:focus {
+      border-color: #1d4ed8;
+      background: #f0f4ff;
+    }
+
+    button {
+      padding: 5px;
+      font-size: 22px;
+      border: none;
+      color: white;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+
+    .prev { background: #5b5b5b; }
+    .prev:hover { background: #888; }
+
+    .next { background: #1c7831; }
+    .next:hover { background: #2fbb52; }
+  </style>
+</body>
+</html>
