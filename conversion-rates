@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Quizington</title>
+   <link rel="icon" type="image/png" href="https://i.ibb.co/dJbzdRb3/R-1221e-modified.png">
+
+</head>
+<body>
+  <div class="quiz">
+
+    <img width="300px" src="https://i.ibb.co/LzNNg29Z/w23328er.png" alt="Quizington"><br>
+    <a href="https://quizington.github.io/" style="
+      display: inline-block;
+      padding: 5px 8px;
+      background: #1d4ed8;
+      color: white;
+      text-decoration: none;
+      border: 1px solid #0f2e8a;
+      font-size: 18px;
+    "
+    onmouseover="this.style.background='#4270ec'"
+    onmouseout="this.style.background='#1d4ed8'">← Home Page</a>
+    <hr>
+
+    <!-- QUIZ UI -->
+    <div id="quizUI">
+    <div id="quizTitle" style="width: 90%; background-color: #d6d6d6;font-size: 22px;">
+  <b></b>
+</div>
+<br>
+      <div class="question">Question 1/10</div>
+      <div class="questiontext">Loading...</div>
+
+     
+
+
+      <textarea placeholder="Working (optional)"></textarea>
+      <input type="text" placeholder="Your answer" />
+
+      <div class="buttons">
+        <button class="prev" onclick="goPrev()">Previous</button>
+        <button class="next" onclick="goNext()">Next</button>
+      </div>
+    </div>
+
+    <!-- RESULTS -->
+    <div id="resultsBox" style="display:none; padding:20px; background-color:#dde6ff; margin-top:20px; border:1px solid #999;"></div>
+
+  </div>
+
+  <script>
+    document.querySelector("#quizTitle b").textContent = "Best Buys and Exchange Rates";
+
+   // -----------------------------
+// Question bank (HCF & LCM)
+// -----------------------------
+// ---------------------------------------------------------
+// FRACTIONS, DECIMALS & PERCENTAGES (CONVERSION)
+// NORMAL QUESTIONS + WORD PROBLEMS
+// ---------------------------------------------------------
+
+const allQuestions = [
+
+
+  // EASY
+  { q: "Pack A: 6 pens for £3. Pack B: 4 pens for £2. Which is better value?", a: "Pack A" },
+  { q: "Bottle A: 1L for £1.20. Bottle B: 2L for £2.80. Which is better value?", a: "Bottle A" },
+  { q: "Crisps A: 50g for £1.00. Crisps B: 100g for £2.20. Which is better value?", a: "Crisps A" },
+  { q: "Chocolate A: 80g for £1.20. Chocolate B: 120g for £1.80. Which is better value?", a: "Same value" },
+  { q: "Juice A: 1.5L for £1.50. Juice B: 1L for £1.10. Which is better value?", a: "Juice A" },
+
+  // MEDIUM
+  { q: "Pack A: 12 batteries for £6. Pack B: 8 batteries for £4. Which is better value?", a: "Same value" },
+  { q: "Rice A: 500g for £1.40. Rice B: 750g for £2.10. Which is better value?", a: "Rice B" },
+  { q: "Shampoo A: 300ml for £2.40. Shampoo B: 500ml for £3.75. Which is better value?", a: "Shampoo B" },
+  { q: "Cereal A: 400g for £2.20. Cereal B: 600g for £3.60. Which is better value?", a: "Same value" },
+  { q: "Milk A: 2L for £1.90. Milk B: 1L for £1.10. Which is better value?", a: "Milk A" },
+
+  // HARD
+  { q: "Biscuits A: 18 for £3.60. Biscuits B: 12 for £2.40. Which is better value?", a: "Same value" },
+  { q: "Coffee A: 200g for £3.80. Coffee B: 300g for £5.40. Which is better value?", a: "Coffee B" },
+  { q: "Sugar A: 1kg for £1.50. Sugar B: 750g for £1.20. Which is better value?", a: "Sugar A" },
+  { q: "Tea A: 80 bags for £2.80. Tea B: 120 bags for £4.50. Which is better value?", a: "Tea B" },
+  { q: "Pasta A: 500g for £1.10. Pasta B: 1kg for £2.40. Which is better value?", a: "Pasta A" },
+
+
+  // -------------------------
+  // BEST BUYS ($ ONLY)
+  // -------------------------
+
+  // EASY
+  { q: "Pack A: 6 pens for $3. Pack B: 4 pens for $2. Which is better value?", a: "Pack A" },
+  { q: "Bottle A: 1L for $1.20. Bottle B: 2L for $2.80. Which is better value?", a: "Bottle A" },
+  { q: "Crisps A: 50g for $1.00. Crisps B: 100g for $2.20. Which is better value?", a: "Crisps A" },
+  { q: "Chocolate A: 80g for $1.20. Chocolate B: 120g for $1.80. Which is better value?", a: "Same value" },
+  { q: "Juice A: 1.5L for $1.50. Juice B: 1L for $1.10. Which is better value?", a: "Juice A" },
+
+  // MEDIUM
+  { q: "Pack A: 12 batteries for $6. Pack B: 8 batteries for $4. Which is better value?", a: "Same value" },
+  { q: "Rice A: 500g for $1.40. Rice B: 750g for $2.10. Which is better value?", a: "Rice B" },
+  { q: "Shampoo A: 300ml for $2.40. Shampoo B: 500ml for $3.75. Which is better value?", a: "Shampoo B" },
+  { q: "Cereal A: 400g for $2.20. Cereal B: 600g for $3.60. Which is better value?", a: "Same value" },
+  { q: "Milk A: 2L for $1.90. Milk B: 1L for $1.10. Which is better value?", a: "Milk A" },
+
+
+
+
+  // -------------------------
+  // POUNDS → DOLLARS
+  // -------------------------
+
+  // EASY
+  { q: "Convert £10 to dollars at £1 = $1.30.", a: "$13" },
+  { q: "Convert £5 to dollars at £1 = $1.30.", a: "$6.50" },
+  { q: "Convert £20 to dollars at £1 = $1.30.", a: "$26" },
+  { q: "Convert £8 to dollars at £1 = $1.30.", a: "$10.40" },
+  { q: "Convert £12 to dollars at £1 = $1.30.", a: "$15.60" },
+
+  // MEDIUM
+  { q: "Convert £30 to dollars at £1 = $1.30.", a: "$39" },
+  { q: "Convert £45 to dollars at £1 = $1.30.", a: "$58.50" },
+  { q: "Convert £18 to dollars at £1 = $1.30.", a: "$23.40" },
+  { q: "Convert £27 to dollars at £1 = $1.30.", a: "$35.10" },
+  { q: "Convert £50 to dollars at £1 = $1.30.", a: "$65" },
+
+  // HARD
+  { q: "Convert £75 to dollars at £1 = $1.30.", a: "$97.50" },
+  { q: "Convert £88 to dollars at £1 = $1.30.", a: "$114.40" },
+  { q: "Convert £120 to dollars at £1 = $1.30.", a: "$156" },
+  { q: "Convert £150 to dollars at £1 = $1.30.", a: "$195" },
+  { q: "Convert £200 to dollars at £1 = $1.30.", a: "$260" },
+
+
+  // -------------------------
+  // DOLLARS → POUNDS
+  // -------------------------
+
+  // EASY
+  { q: "Convert $13 to pounds at £1 = $1.30.", a: "£10" },
+  { q: "Convert $26 to pounds at £1 = $1.30.", a: "£20" },
+  { q: "Convert $6.50 to pounds at £1 = $1.30.", a: "£5" },
+  { q: "Convert $15.60 to pounds at £1 = $1.30.", a: "£12" },
+  { q: "Convert $10.40 to pounds at £1 = $1.30.", a: "£8" },
+
+  // MEDIUM
+  { q: "Convert $39 to pounds at £1 = $1.30.", a: "£30" },
+  { q: "Convert $58.50 to pounds at £1 = $1.30.", a: "£45" },
+  { q: "Convert $35.10 to pounds at £1 = $1.30.", a: "£27" },
+  { q: "Convert $23.40 to pounds at £1 = $1.30.", a: "£18" },
+  { q: "Convert $65 to pounds at £1 = $1.30.", a: "£50" },
+
+  // HARD
+  { q: "Convert $97.50 to pounds at £1 = $1.30.", a: "£75" },
+  { q: "Convert $114.40 to pounds at £1 = $1.30.", a: "£88" },
+  { q: "Convert $156 to pounds at £1 = $1.30.", a: "£120" },
+  { q: "Convert $195 to pounds at £1 = $1.30.", a: "£150" },
+  { q: "Convert $260 to pounds at £1 = $1.30.", a: "£200" },
+
+
+
+  // HARD
+  { q: "Biscuits A: 18 for $3.60. Biscuits B: 12 for $2.40. Which is better value?", a: "Same value" },
+  { q: "Coffee A: 200g for $3.80. Coffee B: 300g for $5.40. Which is better value?", a: "Coffee B" },
+  { q: "Sugar A: 1kg for $1.50. Sugar B: 750g for $1.20. Which is better value?", a: "Sugar A" },
+  { q: "Tea A: 80 bags for $2.80. Tea B: 120 bags for $4.50. Which is better value?", a: "Tea B" },
+  { q: "Pasta A: 500g for $1.10. Pasta B: 1kg for $2.40. Which is better value?", a: "Pasta A" }
+];
+
+
+
+
+
+   // -----------------------------
+    // Pick 10 random questions
+    // -----------------------------
+    let quizQuestions = [];
+    function pickRandomQuestions() {
+      quizQuestions = [...allQuestions]
+        .sort(() => Math.random() - 0.5)
+        .slice(0, 10);
+    }
+
+    // -----------------------------
+    // Quiz state
+    // -----------------------------
+    let current = 0;
+    let userAnswers = Array(10).fill("");
+    let userWorking = Array(10).fill("");
+
+    // -----------------------------
+    // DOM elements
+    // -----------------------------
+    const questionNumber = document.querySelector(".question");
+    const questionText = document.querySelector(".questiontext");
+    const answerInput = document.querySelector("input[type='text']");
+    const workingBox = document.querySelector("textarea");
+    const resultsBox = document.getElementById("resultsBox");
+    const quizUI = document.getElementById("quizUI");
+
+    // -----------------------------
+    // Load question
+    // -----------------------------
+    function loadQuestion() {
+      const q = quizQuestions[current];
+
+      questionNumber.textContent = `Question ${current + 1}/10`;
+      questionText.textContent = q.q;
+
+      answerInput.value = userAnswers[current];
+      workingBox.value = userWorking[current];
+    }
+
+    // Auto-save typing
+    answerInput.addEventListener("input", () => {
+      userAnswers[current] = answerInput.value;
+    });
+
+    workingBox.addEventListener("input", () => {
+      userWorking[current] = workingBox.value;
+    });
+
+    // -----------------------------
+    // Navigation
+    // -----------------------------
+    function goNext() {
+      userAnswers[current] = answerInput.value.trim();
+      userWorking[current] = workingBox.value.trim();
+
+      if (current === 9) {
+        showResults();
+        return;
+      }
+
+      current++;
+      loadQuestion();
+    }
+
+    function goPrev() {
+      if (current > 0) {
+        current--;
+        loadQuestion();
+      }
+    }
+
+    // -----------------------------
+    // Results
+    // -----------------------------
+    function showResults() {
+      quizUI.style.display = "none";
+      resultsBox.style.display = "block";
+
+      let correct = 0;
+      let breakdown = "";
+
+      quizQuestions.forEach((q, i) => {
+        const user = userAnswers[i];
+        const isCorrect = user == q.a;
+
+        if (isCorrect) correct++;
+
+        breakdown += `
+          <p style="font-size:18px; color:${isCorrect ? 'green' : 'darkred'};">
+            Question ${i + 1}: ${q.a}
+            ${!isCorrect ? `<br>You wrote: ${user}` : ""}
+          </p>
+        `;
+      });
+
+      const percent = Math.round((correct / 10) * 100);
+
+      resultsBox.innerHTML = `
+        <h1>Results</h1>
+        <br>
+        <h1>${correct}/10</h1>
+        <h2>${percent}%</h2>
+
+        <button onclick="restartQuiz()" 
+          style="background-color: #1c7831; color: white; font-size: 22px; border:none; padding:8px;">
+          Take this quiz again
+        </button>
+
+        <h3 style="margin-top:20px;">A breakdown:</h3>
+        ${breakdown}
+      `;
+    }
+
+    // -----------------------------
+    // Restart
+    // -----------------------------
+    function restartQuiz() {
+      pickRandomQuestions();
+      current = 0;
+      userAnswers = Array(10).fill("");
+      userWorking = Array(10).fill("");
+
+      resultsBox.style.display = "none";
+      quizUI.style.display = "block";
+
+      loadQuestion();
+    }
+
+    // -----------------------------
+    // Start quiz
+    // -----------------------------
+    pickRandomQuestions();
+    loadQuestion();
+  </script>
+  
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial;
+      background: #eee;
+      display: flex;
+      justify-content: center;
+      padding: 40px 16px;
+    }
+
+    .quiz {
+      width: 100%;
+      max-width: 500px;
+      background: #fff;
+      border: 1px solid #ccc;
+      padding: 20px;
+    }
+
+    h1 {
+      font-size: 30px;
+      margin-bottom: 10px;
+      margin-top: 5px;
+    }
+
+    .question {
+      font-size: 22px;
+      margin-bottom: 10px;
+    }
+
+    .questiontext {
+      font-weight: bold;
+      font-size: 20px;
+      margin-bottom: 20px;
+      background: #dde6ff;
+      padding: 6px 10px;
+      color: #1d4ed8;
+      display: inline-block;
+    }
+
+    input {
+      width: 29%;
+      font-size: 20px;
+      padding: 5px;
+      margin-bottom: 16px;
+      border: 1px solid #999;
+      background: #fff;
+      outline: none;
+    }
+    @media (max-width: 560px) {
+  input {
+    width: 90%;
+  }
+}
+
+
+    textarea {
+      font-family: Arial, Helvetica, sans-serif;
+      width: 90%;
+      font-size: 18px;
+      padding: 5px;
+      margin-bottom: 16px;
+      border: 1px solid #999;
+      background: #fff;
+      outline: none;
+      height: 80px;
+      resize: vertical;
+    }
+
+    input:hover, textarea:hover {
+      background: #f7f7f7;
+    }
+
+    input:focus, textarea:focus {
+      border-color: #1d4ed8;
+      background: #f0f4ff;
+    }
+
+    button {
+      padding: 5px;
+      font-size: 22px;
+      border: none;
+      color: white;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+
+    .prev { background: #5b5b5b; }
+    .prev:hover { background: #888; }
+
+    .next { background: #1c7831; }
+    .next:hover { background: #2fbb52; }
+  </style>
+</body>
+</html>
