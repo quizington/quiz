@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Quizington</title>
+   <link rel="icon" type="image/png" href="https://i.ibb.co/dJbzdRb3/R-1221e-modified.png">
+
+</head>
+<body>
+  <div class="quiz">
+
+    <img width="300px" src="https://i.ibb.co/LzNNg29Z/w23328er.png" alt="Quizington"><br>
+    <a href="https://quizington.github.io/" style="
+      display: inline-block;
+      padding: 5px 8px;
+      background: #1d4ed8;
+      color: white;
+      text-decoration: none;
+      border: 1px solid #0f2e8a;
+      font-size: 18px;
+    "
+    onmouseover="this.style.background='#4270ec'"
+    onmouseout="this.style.background='#1d4ed8'">← Home Page</a>
+    <hr>
+
+    <!-- QUIZ UI -->
+    <div id="quizUI">
+    <div id="quizTitle" style="width: 90%; background-color: #d6d6d6;font-size: 22px;">
+  <b></b>
+</div>
+<br>
+      <div class="question">Question 1/10</div>
+      <div class="questiontext">Loading...</div>
+
+      <br>
+<button class="copyBtn" onclick="copyText('²')">Copy ²</button>
+<button class="copyBtn" onclick="copyText('³')">Copy ³</button>
+
+<script>
+function copyText(text) {
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text);
+  } else {
+    const temp = document.createElement("input");
+    temp.value = text;
+    document.body.appendChild(temp);
+    temp.select();
+    document.execCommand("copy");
+    document.body.removeChild(temp);
+  }
+}
+</script>
+
+<style>
+.copyBtn {
+  background-color: rgb(120, 6, 196);
+  color: white;
+  padding: 8px 14px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 16px;
+}
+.copyBtn:hover {
+  background-color: rgb(159, 85, 207);
+}
+</style>
+
+      <textarea placeholder="Working (optional)"></textarea>
+      <input type="text" placeholder="Your answer" />
+
+      <div class="buttons">
+        <button class="prev" onclick="goPrev()">Previous</button>
+        <button class="next" onclick="goNext()">Next</button>
+      </div>
+    </div>
+
+    <!-- RESULTS -->
+    <div id="resultsBox" style="display:none; padding:20px; background-color:#dde6ff; margin-top:20px; border:1px solid #999;"></div>
+
+  </div>
+
+  <script>
+    document.querySelector("#quizTitle b").textContent = "Advanced Conversions (area & volume)";
+
+   // -----------------------------
+// Question bank (HCF & LCM)
+// -----------------------------
+// ---------------------------------------------------------
+// FRACTIONS, DECIMALS & PERCENTAGES (CONVERSION)
+// NORMAL QUESTIONS + WORD PROBLEMS
+// ---------------------------------------------------------
+
+
+const allQuestions = [
+
+  // -------------------------
+  // ADVANCED CONVERSIONS (AREA)
+  // -------------------------
+
+  // EASY
+  { q: "Convert 300 cm² to m².", a: "0.03 m²" },
+  { q: "Convert 2 m² to cm².", a: "20000 cm²" },
+  { q: "Convert 4500 mm² to cm².", a: "45 cm²" },
+  { q: "Convert 0.4 m² to cm².", a: "4000 cm²" },
+  { q: "Convert 6 cm² to mm².", a: "600 mm²" },
+
+  // MEDIUM
+  { q: "Convert 0.25 m² to mm².", a: "250000 mm²" },
+  { q: "Convert 32000 cm² to m².", a: "3.2 m²" },
+  { q: "Convert 1.8 m² to cm².", a: "18000 cm²" },
+  { q: "Convert 750 cm² to m².", a: "0.075 m²" },
+  { q: "Convert 90000 mm² to m².", a: "0.09 m²" },
+
+  // HARD
+  { q: "Convert 4.5 m² to mm².", a: "4500000 mm²" },
+  { q: "Convert 0.006 m² to cm².", a: "60 cm²" },
+  { q: "Convert 125000 cm² to m².", a: "12.5 m²" },
+  { q: "Convert 0.0035 m² to mm².", a: "3500 mm²" },
+  { q: "Convert 2.4 × 10⁴ cm² to m².", a: "2.4 m²" },
+
+
+  // -------------------------
+  // ADVANCED CONVERSIONS (VOLUME)
+  // -------------------------
+
+  // EASY
+  { q: "Convert 2000 cm³ to m³.", a: "0.002 m³" },
+  { q: "Convert 3 m³ to cm³.", a: "3000000 cm³" },
+  { q: "Convert 5000 mm³ to cm³.", a: "5 cm³" },
+  { q: "Convert 0.01 m³ to cm³.", a: "10000 cm³" },
+  { q: "Convert 12 cm³ to mm³.", a: "12000 mm³" },
+
+  // MEDIUM
+  { q: "Convert 0.4 m³ to mm³.", a: "400000000 mm³" },
+  { q: "Convert 250000 cm³ to m³.", a: "0.25 m³" },
+  { q: "Convert 0.003 m³ to cm³.", a: "3000 cm³" },
+  { q: "Convert 72000 mm³ to cm³.", a: "72 cm³" },
+  { q: "Convert 0.18 m³ to cm³.", a: "180000 cm³" },
+
+  // HARD
+  { q: "Convert 1.2 m³ to mm³.", a: "1200000000 mm³" },
+  { q: "Convert 0.00075 m³ to cm³.", a: "750 cm³" },
+  { q: "Convert 6.4 × 10⁵ cm³ to m³.", a: "0.64 m³" },
+  { q: "Convert 0.0025 m³ to mm³.", a: "2500000 mm³" },
+  { q: "Convert 3.6 × 10⁴ cm³ to m³.", a: "0.036 m³" }
+];
+
+
+   // -----------------------------
+    // Pick 10 random questions
+    // -----------------------------
+    let quizQuestions = [];
+    function pickRandomQuestions() {
+      quizQuestions = [...allQuestions]
+        .sort(() => Math.random() - 0.5)
+        .slice(0, 10);
+    }
+
+    // -----------------------------
+    // Quiz state
+    // -----------------------------
+    let current = 0;
+    let userAnswers = Array(10).fill("");
+    let userWorking = Array(10).fill("");
+
+    // -----------------------------
+    // DOM elements
+    // -----------------------------
+    const questionNumber = document.querySelector(".question");
+    const questionText = document.querySelector(".questiontext");
+    const answerInput = document.querySelector("input[type='text']");
+    const workingBox = document.querySelector("textarea");
+    const resultsBox = document.getElementById("resultsBox");
+    const quizUI = document.getElementById("quizUI");
+
+    // -----------------------------
+    // Load question
+    // -----------------------------
+    function loadQuestion() {
+      const q = quizQuestions[current];
+
+      questionNumber.textContent = `Question ${current + 1}/10`;
+      questionText.textContent = q.q;
+
+      answerInput.value = userAnswers[current];
+      workingBox.value = userWorking[current];
+    }
+
+    // Auto-save typing
+    answerInput.addEventListener("input", () => {
+      userAnswers[current] = answerInput.value;
+    });
+
+    workingBox.addEventListener("input", () => {
+      userWorking[current] = workingBox.value;
+    });
+
+    // -----------------------------
+    // Navigation
+    // -----------------------------
+    function goNext() {
+      userAnswers[current] = answerInput.value.trim();
+      userWorking[current] = workingBox.value.trim();
+
+      if (current === 9) {
+        showResults();
+        return;
+      }
+
+      current++;
+      loadQuestion();
+    }
+
+    function goPrev() {
+      if (current > 0) {
+        current--;
+        loadQuestion();
+      }
+    }
+
+    // -----------------------------
+    // Results
+    // -----------------------------
+    function showResults() {
+      quizUI.style.display = "none";
+      resultsBox.style.display = "block";
+
+      let correct = 0;
+      let breakdown = "";
+
+      quizQuestions.forEach((q, i) => {
+        const user = userAnswers[i];
+        const isCorrect = user == q.a;
+
+        if (isCorrect) correct++;
+
+        breakdown += `
+          <p style="font-size:18px; color:${isCorrect ? 'green' : 'darkred'};">
+            Question ${i + 1}: ${q.a}
+            ${!isCorrect ? `<br>You wrote: ${user}` : ""}
+          </p>
+        `;
+      });
+
+      const percent = Math.round((correct / 10) * 100);
+
+      resultsBox.innerHTML = `
+        <h1>Results</h1>
+        <br>
+        <h1>${correct}/10</h1>
+        <h2>${percent}%</h2>
+
+        <button onclick="restartQuiz()" 
+          style="background-color: #1c7831; color: white; font-size: 22px; border:none; padding:8px;">
+          Take this quiz again
+        </button>
+
+        <h3 style="margin-top:20px;">A breakdown:</h3>
+        ${breakdown}
+      `;
+    }
+
+    // -----------------------------
+    // Restart
+    // -----------------------------
+    function restartQuiz() {
+      pickRandomQuestions();
+      current = 0;
+      userAnswers = Array(10).fill("");
+      userWorking = Array(10).fill("");
+
+      resultsBox.style.display = "none";
+      quizUI.style.display = "block";
+
+      loadQuestion();
+    }
+
+    // -----------------------------
+    // Start quiz
+    // -----------------------------
+    pickRandomQuestions();
+    loadQuestion();
+  </script>
+  
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial;
+      background: #eee;
+      display: flex;
+      justify-content: center;
+      padding: 40px 16px;
+    }
+
+    .quiz {
+      width: 100%;
+      max-width: 500px;
+      background: #fff;
+      border: 1px solid #ccc;
+      padding: 20px;
+    }
+
+    h1 {
+      font-size: 30px;
+      margin-bottom: 10px;
+      margin-top: 5px;
+    }
+
+    .question {
+      font-size: 22px;
+      margin-bottom: 10px;
+    }
+
+    .questiontext {
+      font-weight: bold;
+      font-size: 20px;
+      margin-bottom: 20px;
+      background: #dde6ff;
+      padding: 6px 10px;
+      color: #1d4ed8;
+      display: inline-block;
+    }
+
+    input {
+      width: 29%;
+      font-size: 20px;
+      padding: 5px;
+      margin-bottom: 16px;
+      border: 1px solid #999;
+      background: #fff;
+      outline: none;
+    }
+    @media (max-width: 560px) {
+  input {
+    width: 90%;
+  }
+}
+
+
+    textarea {
+      font-family: Arial, Helvetica, sans-serif;
+      width: 90%;
+      font-size: 18px;
+      padding: 5px;
+      margin-bottom: 16px;
+      border: 1px solid #999;
+      background: #fff;
+      outline: none;
+      height: 80px;
+      resize: vertical;
+    }
+
+    input:hover, textarea:hover {
+      background: #f7f7f7;
+    }
+
+    input:focus, textarea:focus {
+      border-color: #1d4ed8;
+      background: #f0f4ff;
+    }
+
+    button {
+      padding: 5px;
+      font-size: 22px;
+      border: none;
+      color: white;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+
+    .prev { background: #5b5b5b; }
+    .prev:hover { background: #888; }
+
+    .next { background: #1c7831; }
+    .next:hover { background: #2fbb52; }
+  </style>
+</body>
+</html>
